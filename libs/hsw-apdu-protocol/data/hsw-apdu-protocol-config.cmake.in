@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
+#
+# SPDX-License-Identifier: MIT
+
+@PACKAGE_INIT@
+
+get_filename_component(apdu-protocol_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(hsw-error REQUIRED)
+find_dependency(hsw-logger REQUIRED)
+find_dependency(hsw-apdu REQUIRED)
+find_dependency(hsw-protocol REQUIRED)
+
+if(NOT TARGET Infineon::hsw-apdu-protocol)
+    include("${apdu-protocol_CMAKE_DIR}/apdu-protocol-targets.cmake")
+endif()
+
+check_required_components(hsw-apdu-protocol)

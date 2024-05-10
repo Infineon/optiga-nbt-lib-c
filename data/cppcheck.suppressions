@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
+# 
+# SPDX-License-Identifier: CC0-1.0
+
+# cppcheck problem with functions libraries
+unusedFunction
+
+# Suppressing constParameterPointer id as mock files contains place holders for implementation
+constParameterPointer:*/hsw-i2c/src/ifx-i2c-mock.c
+constParameterPointer:*/hsw-timer/src/ifx-timer-mock.c
+
+# Ignore Catch2 configuration problems
+*:*/catch.hpp
+
+# Ignore wrong suppressions from this file
+missingIncludeSystem
+unmatchedSuppression

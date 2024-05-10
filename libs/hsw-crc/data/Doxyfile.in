@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Doxyfile 1.9.8
+
+# Project metadata populated via cmake
+PROJECT_NAME           = @PROJECT_NAME@
+PROJECT_NUMBER         = @PROJECT_VERSION@
+PROJECT_BRIEF          = "@PROJECT_DESCRIPTION@"
+
+# Doxygen build configuration
+INPUT                  = "@CMAKE_CURRENT_SOURCE_DIR@/include" \
+                         "@CMAKE_CURRENT_SOURCE_DIR@/README.md" 
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = "@CMAKE_CURRENT_SOURCE_DIR@/README.md"
+FULL_PATH_NAMES        = YES
+STRIP_FROM_PATH        = "@CMAKE_CURRENT_SOURCE_DIR@/include"
+STRIP_FROM_INC_PATH    = "@CMAKE_CURRENT_SOURCE_DIR@/include"
+OPTIMIZE_OUTPUT_FOR_C  = YES
+ALPHABETICAL_INDEX     = NO
+GENERATE_TODOLIST      = NO
+
+# Doxygen output configuration
+OUTPUT_DIRECTORY       = "@DOXYGEN_OUTPUT_DIR@"
+GENERATE_LATEX         = NO
+HAVE_DOT               = @DOXYGEN_HAVE_DOT@
+GENERATE_HTMLHELP      = @DOXYGEN_HAVE_HHC@
+CHM_FILE               = "@DOXYGEN_CHM_FILE@"
+HHC_LOCATION           = "@DOXYGEN_HHC_EXECUTABLE@"
+SEARCHENGINE           = NO
+
+# Doxygen execution configuration
+QUIET                  = YES
+WARNINGS               = YES
+WARN_NO_PARAMDOC       = YES
+WARN_AS_ERROR          = YES

@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
+#
+# SPDX-License-Identifier: MIT
+
+@PACKAGE_INIT@
+
+get_filename_component(nbtapdu_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(hsw-error REQUIRED)
+find_dependency(hsw-apdu REQUIRED)
+
+if(NOT TARGET Infineon::hsw-apdu-nbt)
+  include("${nbtapdu_CMAKE_DIR}/hsw-nbt-apdu-targets.cmake")
+endif()
+
+check_required_components(hsw-apdu-nbt)

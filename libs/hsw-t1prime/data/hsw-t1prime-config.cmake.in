@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
+#
+# SPDX-License-Identifier: MIT
+
+@PACKAGE_INIT@
+
+get_filename_component(t1prime_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(hsw-error REQUIRED)
+find_dependency(hsw-crc REQUIRED)
+find_dependency(hsw-timer REQUIRED)
+find_dependency(hsw-protocol REQUIRED)
+find_dependency(hsw-logger REQUIRED)
+if (@USE_I2C@)
+  find_dependency(hsw-i2c REQUIRED)
+else()
+  find_dependency(hsw-spi REQUIRED)
+endif()
+
+if(NOT TARGET Infineon::hsw-t1prime)
+  include("${t1prime_CMAKE_DIR}/t1prime-targets.cmake")
+endif()
+
+check_required_components(hsw-t1prime)

@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
+#
+# SPDX-License-Identifier: MIT
+
+@PACKAGE_INIT@
+
+get_filename_component(utils_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(hsw-error REQUIRED)
+
+if(NOT TARGET Infineon::hsw-utils)
+  include("${utils_CMAKE_DIR}/hsw-utils-targets.cmake")
+endif()
+
+check_required_components(hsw-utils)
