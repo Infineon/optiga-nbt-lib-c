@@ -63,3 +63,7 @@ docs/*.tag
 
 # Visual Studio Code
 .vscode/
+.cache/
+
+# Visual Studio
+.vs/

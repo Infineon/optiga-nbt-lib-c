@@ -16,6 +16,7 @@
 
 #include "ifx-t1prime.h"
 #include "infineon/ifx-crc.h"
+#include "infineon/ifx-error.h"
 #include "infineon/ifx-logger.h"
 #include "infineon/ifx-timer.h"
 
@@ -385,7 +386,11 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
     // Send blocks in loop to handle state
     ifx_t1prime_block_t response_block;
     bool aborted = false;
-    while (true)
+    size_t number_of_tries = 0U;
+    // Limit resynchronization of protocol to once
+    bool resynchronized = false;
+    // In case of error limit retry of transceiving error blocks
+    while (number_of_tries <= IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES)
     {
         status = ifx_t1prime_block_transceive(self, &transmission_block,
                                               &response_block);
@@ -435,6 +440,7 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
                         IFX_T1PRIME_PCB_R_CRC(protocol_state->receive_counter);
                     transmission_block.information = NULL;
                     transmission_block.information_size = 0U;
+                    number_of_tries++;
                 }
                 else
                 {
@@ -442,6 +448,9 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
                     remaining -= last_information_size;
                     offset += last_information_size;
                     protocol_state->send_counter ^= 0x01U;
+                    // Received valid block -> reset retries & resync state
+                    number_of_tries = 0U;
+                    resynchronized = false;
 
                     // Prepare next block
                     transmission_block.information_size =
@@ -455,7 +464,6 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
                         (uint8_t *) malloc(transmission_block.information_size);
                     if (transmission_block.information == NULL)
                     {
-                        ifx_t1prime_block_destroy(&response_block);
                         return IFX_ERROR(LIB_T1PRIME, IFX_PROTOCOL_TRANSCEIVE,
                                          IFX_OUT_OF_MEMORY);
                     }
@@ -484,6 +492,8 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
                 // clang-format off
                 memcpy(transmission_block.information, data + offset, transmission_block.information_size); // Flawfinder: ignore
                 // clang-format on
+                // Error occurred, next try is necessary
+                number_of_tries++;
             }
         }
         // S(WTX REQ) -> SE needs more time
@@ -507,6 +517,9 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
             transmission_block.information = response_block.information;
             transmission_block.information_size =
                 response_block.information_size;
+            // Received valid block -> reset retries & resync state
+            number_of_tries = 0U;
+            resynchronized = false;
         }
         // S(IFS REQ) -> SE wants to indicate that it can send more or less data
         else if (response_block.pcb == IFX_T1PRIME_PCB_S_IFS_REQ)
@@ -531,6 +544,9 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
             transmission_block.information = response_block.information;
             transmission_block.information_size =
                 response_block.information_size;
+            // Received valid block -> reset retries & resync state
+            number_of_tries = 0U;
+            resynchronized = false;
         }
         // S(ABORT REQ) -> SE wants to stop chain request
         else if (response_block.pcb == IFX_T1PRIME_PCB_S_ABORT_REQ)
@@ -541,12 +557,55 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
             transmission_block.information = NULL;
             transmission_block.information_size = 0U;
             aborted = true;
+            // Received valid block -> reset retries & resync state
+            number_of_tries = 0U;
+            resynchronized = false;
         }
         else
         {
             ifx_t1prime_block_destroy(&response_block);
             return IFX_ERROR(LIB_T1PRIME, IFX_PROTOCOL_TRANSCEIVE,
                              IFX_T1PRIME_INVALID_BLOCK);
+        }
+        // Number of retries elapsed and not yet resynchronized
+        if ((number_of_tries == IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES + 1) && (!resynchronized)) {
+            IFX_T1PRIME_LOG(
+                self->_logger, IFX_LOG_TAG, IFX_LOG_WARN,
+                "Giving up block exchange after %d retries. Trying to resynchronize protocol.",
+                IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES);
+            status = ifx_t1prime_s_resynch(self);
+            if (status != IFX_SUCCESS) {
+                return status;
+            }
+            ifx_t1prime_block_destroy(&transmission_block);
+            ifx_t1prime_block_destroy(&response_block);
+            // Retransmit last I block
+            transmission_block.pcb =
+                IFX_T1PRIME_PCB_I(protocol_state->send_counter,
+                                    (remaining - last_information_size) > 0U);
+            transmission_block.information_size = last_information_size;
+            transmission_block.information =
+                (uint8_t *) malloc(transmission_block.information_size);
+            if (transmission_block.information == NULL)
+            {
+                return IFX_ERROR(LIB_T1PRIME, IFX_PROTOCOL_TRANSCEIVE,
+                                    IFX_OUT_OF_MEMORY);
+            }
+            // clang-format off
+            memcpy(transmission_block.information, data + offset, transmission_block.information_size); // Flawfinder: ignore
+            // clang-format on
+            // Number of max retries reached, resynchronize.
+            number_of_tries = 0U;
+            resynchronized = true;
+        }
+        // Number of retries elapsed after it was already resynchronized -> give up
+        else if ((number_of_tries == IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES + 1) && resynchronized) {
+            ifx_t1prime_block_destroy(&transmission_block);
+            ifx_t1prime_block_destroy(&response_block);
+            IFX_T1PRIME_LOG(
+                self->_logger, IFX_LOG_TAG, IFX_LOG_WARN,
+                "Giving up block exchange after protocol resynchronization.");
+            return IFX_ERROR(LIB_T1PRIME, IFX_PROTOCOL_TRANSCEIVE, IFX_UNSPECIFIED_ERROR);
         }
     }
     // Validate response in loop to handle state

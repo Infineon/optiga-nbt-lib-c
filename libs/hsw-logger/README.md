@@ -6,7 +6,6 @@ It offers generic `ifx_logger_t` struct that can be populated by concrete implem
 
 The actual `ifx_logger_log()` function uses `printf` syntax so it should feel familiar to `C` developers.
 
-
 ## Example
 
 ```c

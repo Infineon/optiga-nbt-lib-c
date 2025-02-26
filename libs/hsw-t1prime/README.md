@@ -5,7 +5,6 @@ This library implements the Global Platform T=1' protocol as a reusable layer fo
 
 As the protocol only works over [I2C](https://en.wikipedia.org/wiki/I%C2%B2C) or [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface) a concrete driver implementation of the Infineon `hsw-i2c` or `hsw-spi` and `hsw-timer` interface is required when consuming this library.
 
-
 ## Enable I2C/SPI interface
 - If not using `cmake` to build the code, following macros need to be defined for compilation.
   Define the `IFX_T1PRIME_USE_I2C` and `IFX_T1PRIME_INTERFACE_I2C` macro with a *true* value (e.g. `1`) when compiling your code (this enables the build for the `I2C` variant of the T=1' protocol).
@@ -208,7 +207,6 @@ ifx_protocol_destroy(&protocol);
 ## Components
 * **t1-prime**
 This component includes setting physical layer parameters for Global Platform T=1' protocol and function pointer implementations for hsw_protocol library. This components is responsible for framing and transceiving the APDUs as per GP T=1' protocol. The pre-requisite is that, this protocol library requires concrete implementation of physical layer protocol(I2C /SPI).
-
 
 ## Directory Structure
 The library directory is structured according to the Pitchfork Layout.

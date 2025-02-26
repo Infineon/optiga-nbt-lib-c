@@ -4,7 +4,6 @@ This library offers a C interface for reusable protocol stacks similar to the [I
 
 It offers generic `ifx_protocol_t` structs that can be populated by concrete implementations. These `ifx_protocol_t` structs can be layered to achieve independence between them and have reusable components (e.g. I2C driver, Global Platform T=1', Global Platform SCP03, etc.).
 
-
 ## Example
 
 ```c

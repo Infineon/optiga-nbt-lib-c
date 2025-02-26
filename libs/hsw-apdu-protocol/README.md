@@ -5,7 +5,6 @@ This library is built on top of the generic `hsw-protocol` library and offers an
 
 It can be used on top of any existing `ifx_protocol_t` stack to better fit the needs of interacting with secure elements.
 
-
 ## Example
 
 ```c

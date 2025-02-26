@@ -1,5 +1,0 @@
-Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-
-Files: docs/api-reference/**
-Copyright: 2024 Infineon Technologies AG
-License: MIT

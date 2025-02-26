@@ -24,7 +24,6 @@ size_t response_len = 0x00;
 ifx_protocol_transceive(&protocol, data, sizeof(data), &response, &response_len);
 ```
 
-
 ## Mock Implementation for Unit testing
 
 For developers' convenience a mock implementation of the library `Infineon::ifx-i2c-mock` is provided that can be consumed when using this project as a submodule (e.g. via [CPM](https://github.com/cpm-cmake/CPM.cmake)). This version performs basic parameter validation but besides this is a full NOOP implementation only suitable for unit testing.

@@ -60,3 +60,7 @@ DartConfiguration.tcl
 Doxyfile
 docs/html
 docs/*.tag
+
+# VS code
+.cache/
+.vscode

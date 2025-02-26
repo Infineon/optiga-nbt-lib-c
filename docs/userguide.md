@@ -1,6 +1,11 @@
-# OPTIGA&trade; Authenticate NBT Host Library for C: User guide
+<!--
+SPDX-FileCopyrightText: 2024 Infineon Technologies AG
+SPDX-License-Identifier: MIT
+-->
 
-The OPTIGA&trade; Authenticate NBT Host Library for C offers an extensive API to interact with the OPTIGA&trade; Authenticate NBT and to utilize its full functionality. The host library is mainly intended to be used in C/C++ applications interfacing to the OPTIGA&trade; Authenticate NBT via I2C (for example: MCUs).
+# OPTIGA™ Authenticate NBT Host Library for C: User guide
+
+The OPTIGA™ Authenticate NBT Host Library for C offers an extensive API to interact with the OPTIGA™ Authenticate NBT and to utilize its full functionality. The host library is mainly intended to be used in C/C++ applications interfacing to the OPTIGA™ Authenticate NBT via I2C (for example: MCUs).
 
 ## Scope and purpose
 
@@ -8,7 +13,7 @@ This guide describes the features and functionality of the host library, includi
 
 ## Intended audience
 
-This guide is primarily intended for embedded application developers who target to integrate the OPTIGA&trade; Authenticate NBT Host Library for C into their embedded application running on an MCU to interact with the OPTIGA&trade; Authenticate NBT.
+This guide is primarily intended for embedded application developers who target to integrate the OPTIGA™ Authenticate NBT Host Library for C into their embedded application running on an MCU to interact with the OPTIGA™ Authenticate NBT.
 
 ## Quick navigation
 
@@ -21,7 +26,7 @@ This guide is primarily intended for embedded application developers who target 
 * [Toolset](#toolset)
 * [CMake build system](#cmake-build-system)
 * [Integrating into an existing CMake project](#integrating-into-an-existing-cmake-project)
-* [Integrating into ModusToolbox&trade; applications](#integrating-into-modustoolbox-applications)
+* [Integrating into ModusToolbox™ applications](#integrating-into-modustoolbox-applications)
 * [Using a different build system](#using-a-different-build-system)
 * [Library interaction](#library-interaction)
 * [Library usage](#host-library-usage)
@@ -30,22 +35,22 @@ This guide is primarily intended for embedded application developers who target 
 
 ## Key features
 
-* NFC-to-I2C bridge commands for interaction with the OPTIGA&trade; Authenticate NBT
-* Sends command APDUs (C-APDU) and receives response APDUs (R-APDU) from the OPTIGA&trade; Authenticate NBT
-* Configuration of the OPTIGA&trade; Authenticate NBT via its configurator application
-* Personalization and operational commands to support simplified interaction with the OPTIGA&trade; Authenticate NBT
+* NFC-to-I2C bridge commands for interaction with the OPTIGA™ Authenticate NBT
+* Sends command APDUs (C-APDU) and receives response APDUs (R-APDU) from the OPTIGA™ Authenticate NBT
+* Configuration of the OPTIGA™ Authenticate NBT via its configurator application
+* Personalization and operational commands to support simplified interaction with the OPTIGA™ Authenticate NBT
 * NDEF host library that enables the host application to build, encode and decode NDEF records and messages
 * NDEF host library that supports "NFC Forum well known type" and "NFC Forum external type"
 * NDEF host library that provides brand-protection supported NDEF records
-* Supports GlobalPlatform T=1' protocol for I2C communication between host MCU and OPTIGA&trade; Authenticate NBT
+* Supports GlobalPlatform T=1' protocol for I2C communication between host MCU and OPTIGA™ Authenticate NBT
 
 ## Host library architecture
 
-This host library provides high-level command abstractions to communicate with the OPTIGA&trade; Authenticate NBT. The library is composed of multiple sub-libraries and interfaces which are included in the host library package. The core libraries are designed to be platform-independent and they depend on a number of other libraries to provide their full functionality. Some of these dependent libraries require platform-specific implementations. Generic interfaces are provided by the host library package but concrete implementations of these interfaces need to be provided by the user of the host library with respect to the target platform.
+This host library provides high-level command abstractions to communicate with the OPTIGA™ Authenticate NBT. The library is composed of multiple sub-libraries and interfaces which are included in the host library package. The core libraries are designed to be platform-independent and they depend on a number of other libraries to provide their full functionality. Some of these dependent libraries require platform-specific implementations. Generic interfaces are provided by the host library package but concrete implementations of these interfaces need to be provided by the user of the host library with respect to the target platform.
 
 ### Core libraries
 
-The OPTIGA&trade; Authenticate NBT Host Library for C includes three core libraries to interact with the OPTIGA&trade; Authenticate NBT.
+The OPTIGA™ Authenticate NBT Host Library for C includes three core libraries to interact with the OPTIGA™ Authenticate NBT.
 
 * [hsw-apdu-nbt](../libs/hsw-apdu-nbt/README.md)
 * [hsw-ndef](../libs/hsw-ndef/README.md)
@@ -55,7 +60,7 @@ The OPTIGA&trade; Authenticate NBT Host Library for C includes three core librar
 
 **hsw-apdu-nbt**
 
-The NBT APDU library allows the host application to send C-APDUs to the OPTIGA&trade; Authenticate NBT and receive R-APDUs from the OPTIGA&trade; Authenticate NBT. This library is intended to be used with I2C as base layer of the communication channel (base layer of the Protocol interface).
+The NBT APDU library allows the host application to send C-APDUs to the OPTIGA™ Authenticate NBT and receive R-APDUs from the OPTIGA™ Authenticate NBT. This library is intended to be used with I2C as base layer of the communication channel (base layer of the Protocol interface).
 
 **hsw-ndef**
 
@@ -63,35 +68,35 @@ The NFC Data Exchange Format (NDEF) specification by NFC Forum defines a common 
 
 **hsw-ndef-bp**
 
-The NFC brand protection record library is an extension to the NDEF library to create and parse NFC brand protection records for the OPTIGA&trade; Authenticate NBT. This extended library includes NDEF records and parsers to provide the core brand protection functionality of the OPTIGA&trade; Authenticate NBT. Brand protection-specific encoding and decoding are handled by the library itself. But this library depends on the `hsw-ndef` library for registering its records and for further NDEF record and message manipulations.
+The NFC brand protection record library is an extension to the NDEF library to create and parse NFC brand protection records for the OPTIGA™ Authenticate NBT. This extended library includes NDEF records and parsers to provide the core brand protection functionality of the OPTIGA™ Authenticate NBT. Brand protection-specific encoding and decoding are handled by the library itself. But this library depends on the `hsw-ndef` library for registering its records and for further NDEF record and message manipulations.
 
 ### Dependent libraries and interfaces
 
 The core libraries are dependent on several other libraries and interfaces. Detailed description of these dependent libraries is provided below.
 
-|Dependent&nbsp;library | Description |
-|-------------------|--------------|
-| [hsw-t1prime](../libs/hsw-t1prime/README.md) | This dependent library implements the GlobalPlatform T=1' protocol which uses timer and I2C platform-specific interfaces to interact with the OPTIGA&trade; Authenticate NBT via I2C. This dependent library is provided as a separate protocol stack. This library can be built and linked to `hsw-apdu-nbt` core library to communicate via GP T=1' I2C protocol. This dependent library is dependent on interfaces such as timer and I2C. Platform-specific implementations of these interfaces are required to access full functionality of the library. |
-| [hsw-error](../libs/hsw-error/README.md) | This dependent library is used for creating and parsing error information. |
-| [hsw-protocol](../libs/hsw-protocol/README.md) | This dependent library provides the communication protocol interface for the NBT APDU library. This dependent  library provides functionalities such as initialize, transceive and terminate to communicate with the OPTIGA&trade; Authenticate NBT. It can be implemented for any communication protocol such as I2C and UART. |
-|[hsw-utils](../libs/hsw-utils/README.md) | This dependent library provides the utility methods such as for byte conversions, string conversions, bit operations, and encoders/decoders for TLV data.|
-| [hsw-apdu](../libs/hsw-apdu/README.md) | This dependent library is used to build the APDU command bytes and parse the APDU response bytes according to the ISO/IEC 7816-4 specification. |
-| [hsw-apdu-protocol](../libs/hsw-apdu-protocol/README.md) | This dependent library is used for sending and receiving APDU command bytes according to the ISO/IEC 7816-4 specification. |
-| [hsw-crc](../libs/hsw-crc/README.md) | This dependent library is a generic library used for CRC calculation. This library is used for CRC calculation of GlobalPlatform T=1' protocol stack. |
+| Dependent&nbsp;library                                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [hsw-t1prime](../libs/hsw-t1prime/README.md)             | This dependent library implements the GlobalPlatform T=1' protocol which uses timer and I2C platform-specific interfaces to interact with the OPTIGA™ Authenticate NBT via I2C. This dependent library is provided as a separate protocol stack. This library can be built and linked to `hsw-apdu-nbt` core library to communicate via GP T=1' I2C protocol. This dependent library is dependent on interfaces such as timer and I2C. Platform-specific implementations of these interfaces are required to access full functionality of the library. |
+| [hsw-error](../libs/hsw-error/README.md)                 | This dependent library is used for creating and parsing error information.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| [hsw-protocol](../libs/hsw-protocol/README.md)           | This dependent library provides the communication protocol interface for the NBT APDU library. This dependent  library provides functionalities such as initialize, transceive and terminate to communicate with the OPTIGA™ Authenticate NBT. It can be implemented for any communication protocol such as I2C and UART.                                                                                                                                                                                                                              |
+| [hsw-utils](../libs/hsw-utils/README.md)                 | This dependent library provides the utility methods such as for byte conversions, string conversions, bit operations, and encoders/decoders for TLV data.                                                                                                                                                                                                                                                                                                                                                                                                    |
+| [hsw-apdu](../libs/hsw-apdu/README.md)                   | This dependent library is used to build the APDU command bytes and parse the APDU response bytes according to the ISO/IEC 7816-4 specification.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| [hsw-apdu-protocol](../libs/hsw-apdu-protocol/README.md) | This dependent library is used for sending and receiving APDU command bytes according to the ISO/IEC 7816-4 specification.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| [hsw-crc](../libs/hsw-crc/README.md)                     | This dependent library is a generic library used for CRC calculation. This library is used for CRC calculation of GlobalPlatform T=1' protocol stack.                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 The generic platform independent interfaces are provided with the host library to support easy porting to any target MCU. Concrete implementations of these interfaces for the respective target platform are needed to utilize this host library.
 
-| Dependent&nbsp;interface | Description |
-|--------------------------|-------------|
-| [hsw-i2c](../libs/hsw-i2c/README.md) | This interface is used for the I2C protocol implementation of the GlobalPlatform T=1' protocol stack. |
-| [hsw-timer](../libs/hsw-timer/README.md) | This interface is used for the timer implementation of the GlobalPlatform T=1' protocol stack. |
+| Dependent&nbsp;interface                   | Description                                                                                                                                                                  |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [hsw-i2c](../libs/hsw-i2c/README.md)       | This interface is used for the I2C protocol implementation of the GlobalPlatform T=1' protocol stack.                                                                        |
+| [hsw-timer](../libs/hsw-timer/README.md)   | This interface is used for the timer implementation of the GlobalPlatform T=1' protocol stack.                                                                               |
 | [hsw-logger](../libs/hsw-logger/README.md) | This interface is used for logging information/errors. It offers generic interface that can be populated by concrete implementations, such as file logger or console logger. |
 
 ## Platform-specific implementations
 
 This host library is written with portability in mind. Wherever possible, platform-specific code is avoided and generic interfaces are used. These interfaces offer generic header files that can be included in any library that needs the functionality. A concrete implementation of these interfaces with respect to the target MCU is needed to utilize this host library.
 
-This section will give an overview of the interfaces that need to be implemented to utilize the OPTIGA&trade; Authenticate NBT Host Library for C on arbitrary platforms.
+This section will give an overview of the interfaces that need to be implemented to utilize the OPTIGA™ Authenticate NBT Host Library for C on arbitrary platforms.
 
 **hsw-i2c**
 
@@ -112,7 +117,7 @@ This section will give an overview of the interfaces that need to be implemented
     * `ifx_logger_t *_logger` : Optional Logger object. This field might be NULL if no logger is set.
     * `void *_properties` : Holds I2C-specific protocol properties/state such as slave address, guard time, and timer for guard time. This field might be NULL if no state is required.
 
-* A function to transmit data from the host MCU to the OPTIGA&trade; Authenticate NBT via `I2C` (for example: `ifx_i2c_psoc6_transmit()`).
+* A function to transmit data from the host MCU to the OPTIGA™ Authenticate NBT via `I2C` (for example: `ifx_i2c_psoc6_transmit()`).
   This function must match the `ifx_protocol_transmit_callback_t` signature and takes three parameters:
   * `ifx_protocol_t *self`: This is the object populated by the initialization function described above.
   * `const uint8_t *data`: This is the data to be transmitted via I2C.
@@ -121,7 +126,7 @@ This section will give an overview of the interfaces that need to be implemented
   \
     Store a pointer to this function in `ifx_protocol_t._transmit` in `ifx_protocol_t` struct while initialization. This function shall implement the platform-specific I2C driver transmit functionality. This function must make sure that the I2C guard time is respected, which means await the guard time before transmitting the data (via joining timer) and starting the guard time timer after transmitting data.
 
-* A function to receive data from the OPTIGA&trade; Authenticate NBT to host MCU via `I2C` (for example: `ifx_i2c_psoc6_receive()`)
+* A function to receive data from the OPTIGA™ Authenticate NBT to host MCU via `I2C` (for example: `ifx_i2c_psoc6_receive()`)
   This function must match the `ifx_protocol_receive_callback_t` signature and takes four parameters:
   * `ifx_protocol_t *self`: This is the object populated by the initialization function described above.
   * `size_t expected_len`: This is the number of bytes to be read.
@@ -173,9 +178,9 @@ For the timer-specific functionality, the following functions need to be impleme
 
 **hsw-t1prime interrupt handling**
 
-The GlobalPlatform T=1' data interrupt handling has been encapsuled and is implemented as a plug-in solution. To add interrupt handling to your physical layer you can provide a custom `ifx_t1prime_irq_handler_t` to the protocol stack using `ifx_t1prime_set_irq_handler()`. This interrupt handler shall wait until the GPIO interrupt has triggered or the given amount of microseconds has elapsed. It is up to the concrete implementation to check which GPIO pin to use and how to check if the time has elapsed. This enables platform-independent code with interrupt handling being an optional plug-in solution. This encapsulation enables reusable interrupt handlers without the need to add protocol-specifics to the physical layer. 
+The GlobalPlatform T=1' data interrupt handling has been encapsuled and is implemented as a plug-in solution. To add interrupt handling to your physical layer you can provide a custom `ifx_t1prime_irq_handler_t` to the protocol stack using `ifx_t1prime_set_irq_handler()`. This interrupt handler shall wait until the GPIO interrupt has triggered or the given amount of microseconds has elapsed. It is up to the concrete implementation to check which GPIO pin to use and how to check if the time has elapsed. This enables platform-independent code with interrupt handling being an optional plug-in solution. This encapsulation enables reusable interrupt handlers without the need to add protocol-specifics to the physical layer.
 
-To use `hsw-t1prime` interrupt handling, a platform-specific interrupt routine has to be initialized and set to be triggered by the GPIO pin connected to the OPTIGA&trade; Authenticate NBT's interrupt pin.
+To use `hsw-t1prime` interrupt handling, a platform-specific interrupt routine has to be initialized and set to be triggered by the GPIO pin connected to the OPTIGA™ Authenticate NBT's interrupt pin.
 
 Refer to the documentation provided with the t1prime "GlobalPlatform T=1' protocol layer" for further implementation information.
 
@@ -197,7 +202,7 @@ Refer to the documentation provided with the `hsw-logger` interface for further 
 
 ## Directory structure
 
-The directory structure of the OPTIGA&trade; Authenticate NBT Host Library for C follows the [pitchfork](https://github.com/vector-of-bool/pitchfork/blob/develop/data/spec.bs) layout including core and dependent libraries and interfaces.
+The directory structure of the OPTIGA™ Authenticate NBT Host Library for C follows the [pitchfork](https://github.com/vector-of-bool/pitchfork/blob/develop/data/spec.bs) layout including core and dependent libraries and interfaces.
 
 ```text
 hsw-nbt
@@ -229,20 +234,20 @@ hsw-nbt
 
 Install the below toolset to build the host library on a Windows platform.
 
- |Tool | Usage | Supported version |
- |------|-------|-------|
- |[CMake](https://cmake.org/)| Toolchain for the build framework | 3.25.1 |
- |[MinGW-w64](https://www.mingw-w64.org/) | GCC Compiler to build libraries on a Windows platform| 8.1.0 |
- |[MSVC](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.4#1743--visual-studio-2022-version-1743) | C/C++ Compiler that comes with 'Visual Studio build tools' to build libraries on a Windows platform| 17.4.3 |
- |[LLVM](https://llvm.org/) | Clang Compiler to build libraries and clang-format tool to format the source code | 17.0.3 |
- |[Doxygen](https://www.doxygen.nl/) | Tool to generate documentation from source code | 1.9.8 |
- |[Ninja](https://ninja-build.org/) | Build system used with CMake to generate ninja build files | 1.11.1 |
+ | Tool                                                                                                                           | Usage                                                                                               | Supported version |
+ | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------- |
+ | [CMake](https://cmake.org/)                                                                                                    | Toolchain for the build framework                                                                   | 3.25.1            |
+ | [MinGW-w64](https://www.mingw-w64.org/)                                                                                        | GCC Compiler to build libraries on a Windows platform                                               | 8.1.0             |
+ | [MSVC](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.4#1743--visual-studio-2022-version-1743) | C/C++ Compiler that comes with 'Visual Studio build tools' to build libraries on a Windows platform | 17.4.3            |
+ | [LLVM](https://llvm.org/)                                                                                                      | Clang Compiler to build libraries and clang-format tool to format the source code                   | 17.0.3            |
+ | [Doxygen](https://www.doxygen.nl/)                                                                                             | Tool to generate documentation from source code                                                     | 1.9.8             |
+ | [Ninja](https://ninja-build.org/)                                                                                              | Build system used with CMake to generate ninja build files                                          | 1.11.1            |
 
-If you are using the library on an MCU as target, build the library using the MCU platform-specific compiler and link it to the application. For example, to use the OPTIGA&trade; Authenticate NBT Host Library for C on a PSoC&trade; which uses the ARM Cortex-M architecture, build the library using the ARM-GCC compiler `arm-none-eabi-gcc` and integrate it into the PSoC&trade; application.
+If you are using the library on an MCU as target, build the library using the MCU platform-specific compiler and link it to the application. For example, to use the OPTIGA™ Authenticate NBT Host Library for C on a PSoC™ which uses the ARM Cortex-M architecture, build the library using the ARM-GCC compiler `arm-none-eabi-gcc` and integrate it into the PSoC™ application.
 
 ## CMake build system
 
-The OPTIGA&trade; Authenticate NBT Host Library for C uses [CMake](https://cmake.org/) as the preferred build system to build its code as well as perform additional tasks like building the documentation or static code analysis. It tries to be as generic as possible, not relying on specific IDE integrations to maximize portability.
+The OPTIGA™ Authenticate NBT Host Library for C uses [CMake](https://cmake.org/) as the preferred build system to build its code as well as perform additional tasks like building the documentation or static code analysis. It tries to be as generic as possible, not relying on specific IDE integrations to maximize portability.
 
 ### Dependencies
 
@@ -291,7 +296,7 @@ cmake -G "Ninja" ..
 
 ### Documentation
 
-The OPTIGA&trade; Authenticate NBT Host Library for C's API documentation can be found in the `docs/` folder. Doxygen is used to generate the API documentation. To build, use the `BUILD_DOCUMENTATION` flag when configuring CMake to add the custom target libname-documentation to the build (also added to the ALL build by default). Before building the documentation, make sure that [Doxygen](https://www.doxygen.nl/) is installed.
+The OPTIGA™ Authenticate NBT Host Library for C's API documentation can be found in the `docs/` folder. Doxygen is used to generate the API documentation. To build, use the `BUILD_DOCUMENTATION` flag when configuring CMake to add the custom target libname-documentation to the build (also added to the ALL build by default). Before building the documentation, make sure that [Doxygen](https://www.doxygen.nl/) is installed.
 
 ```sh
 cmake -DBUILD_DOCUMENTATION=ON ..
@@ -303,7 +308,7 @@ Each library specific documentation will be available in respective library's `d
 
 ## Integrating into an existing CMake project
 
-The OPTIGA&trade; Authenticate NBT Host Library for C is designed to be easily integrable into existing CMake projects. The simplest way to integrate the host library is to copy the full source tree in a subdirectory in your CMake project (for example: *external*) and call [add_subdirectory()](https://cmake.org/cmake/help/v3.10/command/add_subdirectory.html) accordingly.
+The OPTIGA™ Authenticate NBT Host Library for C is designed to be easily integrable into existing CMake projects. The simplest way to integrate the host library is to copy the full source tree in a subdirectory in your CMake project (for example: *external*) and call [add_subdirectory()](https://cmake.org/cmake/help/v3.10/command/add_subdirectory.html) accordingly.
 For successful compilation of the library, platform specific implementations must be added to build successfully.
 
 * As the host library follows the pitchfork layout, create a folder `extra/` in existing project and add all the platform-specific implementations(ifx-mcu-i2c.c, ifx-mcu-timer.c, hsw-logger-file CMake directory) inside this folder.
@@ -322,19 +327,19 @@ add_executable(nbt_example ifx-myproject.c extra/ifx-mcu-i2c.c extra/ifx-mcu-tim
 target_link_libraries(nbt_example Infineon::hsw-apdu-nbt Infineon::hsw-ndef Infineon::hsw-logger-file)
 ```
 
-This will provide your CMake project with all the targets defined in the CMakeLists.txt of the core and dependent library. The OPTIGA&trade; Authenticate NBT-specific core libraries will be available in the `Infineon::` namespace and can be used like any other cmake target. Developers do not need to take care of include or linker paths and can fully rely on cmake's functionality.
+This will provide your CMake project with all the targets defined in the CMakeLists.txt of the core and dependent library. The OPTIGA™ Authenticate NBT-specific core libraries will be available in the `Infineon::` namespace and can be used like any other cmake target. Developers do not need to take care of include or linker paths and can fully rely on cmake's functionality.
 
 The `CMake` integration for the core libraries will not use any special compiler flags and will work with almost any C99 compiler.
 
 ## Integrating into ModusToolbox applications
 
-The simplest way to integrate this host library into ModusToolbox&trade; applications is to:
+The simplest way to integrate this host library into ModusToolbox™ applications is to:
 
-* Copy the full source tree in a subdirectory in the libs folder of your ModusToolbox&trade; project (for example: libs/ifx/).
+* Copy the full source tree in a subdirectory in the libs folder of your ModusToolbox™ project (for example: libs/ifx/).
 * Remove the mock files from dependent interfaces. That is, remove ifx-timer-mock.c, ifx-i2c-mock.c from `hsw-timer` and `hsw-i2c` libraries respectively.
-* Place all the platform-specific implementations in the extra/ folder in the root path of the ModusToolbox&trade; project.
+* Place all the platform-specific implementations in the extra/ folder in the root path of the ModusToolbox™ project.
 
-Now triggering the ModusToolbox&trade; command to `Build Application` includes the host library's source files along with its platform-specific implementations for building the application.
+Now triggering the ModusToolbox™ command to `Build Application` includes the host library's source files along with its platform-specific implementations for building the application.
 
 ## Using a different build system
 
@@ -343,6 +348,7 @@ Typically,
 
 * Each library's *include* directory will need to be put on the compiler search path.
   > For example, hsw-nbt/libs/hsw-ndef/include
+
 * The contents of all *src* directory will need to be compiled.
   > For example, hsw-nbt/libs/hsw-ndef/src
 
@@ -358,13 +364,13 @@ Typically,
 
 ## Library interaction
 
-An example interaction between the host library's components and an application is illustrated below with a use case: *Update URI data in an application file of the OPTIGA&trade; Authenticate NBT*. The `hsw-ndef` library is used to prepare a URI record and update it on the file system of the OPTIGA&trade; Authenticate NBT using the `hsw-apdu-nbt` library.
+An example interaction between the host library's components and an application is illustrated below with a use case: *Update URI data in an application file of the OPTIGA™ Authenticate NBT*. The `hsw-ndef` library is used to prepare a URI record and update it on the file system of the OPTIGA™ Authenticate NBT using the `hsw-apdu-nbt` library.
 
 <img src="./images/hsw-nbt-interaction.png" width="800" />
 
 ## Host library usage
 
-The usage of OPTIGA&trade; Authenticate NBT Host Library for C's APIs to update a URI record in the device is illustrated below.
+The usage of OPTIGA™ Authenticate NBT Host Library for C's APIs to update a URI record in the device is illustrated below.
 
 1. Include the required headers from the host library
 
@@ -376,29 +382,29 @@ The usage of OPTIGA&trade; Authenticate NBT Host Library for C's APIs to update 
     #include "nbt-cmd.h"
     ```
 
-2. Use the GP T=1' protocol channel as an interface to communicate with the OPTIGA&trade; Authenticate NBT
+2. Use the GP T=1' protocol channel as an interface to communicate with the OPTIGA™ Authenticate NBT
 
     ```c
-    /** GP T=1' I2C protocol - PSoC&trade;6 Host MCU */
+    /** GP T=1' I2C protocol - PSoC™6 Host MCU */
     // Protocol to handle the GP T=1' I2C protocol communication with tag
     ifx_protocol_t gp_i2c_protocol;
 
-    // Protocol to handle communication with PSoC&trade;6 I2C driver
+    // Protocol to handle communication with PSoC™6 I2C driver
     ifx_protocol_t psoc6_i2c_driver_protocol;
     /* Initialize protocol driver layer here with I2C implementation.
     Note: Does not work without initialized driver layer for I2C. */
 
     // code placeholder
 
-    // Use GP T=1' protocol channel as a interface to communicate with the OPTIGA&trade; Authenticate NBT
+    // Use GP T=1' protocol channel as a interface to communicate with the OPTIGA™ Authenticate NBT
     status = ifx_t1prime_initialize(&gp_i2c_protocol, &psoc6_i2c_driver_protocol);
     status = ifx_protocol_activate(&gp_i2c_protocol, NULL, NULL);
     ```
 
-3. Update the URI record in the OPTIGA&trade; Authenticate NBT's NDEF message file (FileID 'E104')
+3. Update the URI record in the OPTIGA™ Authenticate NBT's NDEF message file (FileID 'E104')
 
     ```c
-    // NBTCommandSet object to handle all OPTIGA&trade; Authenticate NBT operations
+    // NBTCommandSet object to handle all OPTIGA™ Authenticate NBT operations
     nbt_cmd_t command_set;
     // Initialize the NBT command set with GP T=1' protocol
     status = nbt_initialize(&command_set, &gp_i2c_protocol, &logger_handle);
@@ -432,7 +438,7 @@ The usage of OPTIGA&trade; Authenticate NBT Host Library for C's APIs to update 
 ### Pass-through interrupt handling
 
 The host library supports the pass-through communication mode.
-The PT mode is enabled by configuring the IRQ function to PT-IRQ. To handle pass-through interrupts, the GPIO IRQ pin has to be configured to handle pass-through interrupt in the host MCU. This IRQ pin is used to signal when PT data is available. The host MCU can then fetch the forwarded data, process it, and put a response to the OPTIGA&trade; Authenticate NBT.
+The PT mode is enabled by configuring the IRQ function to PT-IRQ. To handle pass-through interrupts, the GPIO IRQ pin has to be configured to handle pass-through interrupt in the host MCU. This IRQ pin is used to signal when PT data is available. The host MCU can then fetch the forwarded data, process it, and put a response to the OPTIGA™ Authenticate NBT.
 
 ### Static code analysis
 
@@ -488,4 +494,4 @@ find . -type f \( -name '*.cmake' -or -name 'CMakeLists.txt' \) -exec cmake-form
 
 ## References
 
-* Infineon Technologies AG: *OPTIGA&trade; Authenticate NBT, Extended Datasheet*
+* Infineon Technologies AG: *OPTIGA™ Authenticate NBT, Extended Datasheet*

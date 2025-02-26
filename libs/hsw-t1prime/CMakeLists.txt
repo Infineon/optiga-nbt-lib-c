@@ -45,24 +45,20 @@ set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/infineon/ifx-t1prime.h"
 # ##############################################################################
 # Dependencies
 # ##############################################################################
-# Check local overrides for CI system, etc.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.cmake/InfineonDownloadOverrides.cmake")
-  include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/InfineonDownloadOverrides.cmake")
-endif()
-
 # Actually load dependencies
-include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/infineon-package-management/\
-InfineonPackageManagement.cmake")
-require_infineon_package(NAME hsw-error)
-require_infineon_package(NAME hsw-crc)
-require_infineon_package(NAME hsw-timer)
-require_infineon_package(NAME hsw-logger)
-require_infineon_package(NAME hsw-protocol)
+include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/CPM.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/utils.cmake")
+
+add_package_if_not_exists(hsw-error "../hsw-error.git" "6712781fc3fff696e993cfc53d2ab8b656056cfd")
+add_package_if_not_exists(hsw-crc "../hsw-crc.git" "c44c8d7ac4d0929041881c784cd18048bea21b82")
+add_package_if_not_exists(hsw-logger "../hsw-logger.git" "304d0f74af02e4e91e8ad3d4e977fdc2616e81ad")
+add_package_if_not_exists(hsw-timer "../hsw-timer.git" "efdc79f81e639836b2ac3f797ba78abd403af2fb")
+add_package_if_not_exists(hsw-protocol "../hsw-protocol.git" "73e49383d203d7cc6f353fa35a3f856e1cbf78bb")
 
 if(${IFX_T1PRIME_USE_I2C})
-  require_infineon_package(NAME hsw-i2c)
+add_package_if_not_exists(hsw-i2c "../hsw-i2c.git" "bb244c9c6292bff14b9f1b004bb72b5a6a08637e")
 else()
-  require_infineon_package(NAME hsw-spi)
+  message("Not supported, only I2C supported.")
 endif()
 
 # ##############################################################################
@@ -120,7 +116,6 @@ if(BUILD_DOCUMENTATION)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
       "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
-      "${CMAKE_CURRENT_SOURCE_DIR}/.cmake/infineon-package-management/README.md"
       "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
       "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
       ${PROJECT_NAME}

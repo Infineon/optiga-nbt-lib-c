@@ -14,7 +14,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 # Main project configuration
 project(
   hsw-nbt
-  VERSION 1.1.1
+  VERSION 1.1.2
   DESCRIPTION "OPTIGA Authenticate NBT Host Library for C"
   LANGUAGES C CXX)
 
@@ -24,7 +24,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Build options
-option(BUILD_DOCUMENTATION "Build API documentation using doxygen" ON)
+option(BUILD_DOCUMENTATION "Build API documentation using doxygen" OFF)
 
 # ##############################################################################
 # Submodules with actual functionality
