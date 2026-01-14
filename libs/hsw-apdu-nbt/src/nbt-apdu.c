@@ -74,17 +74,17 @@ void nbt_destroy(nbt_cmd_t *self)
     if (!IFX_VALIDATE_NULL_PTR_MEMORY(self))
     {
         IFX_FREE(self->apdu->data);
+        self->apdu->data = NULL;
         IFX_FREE(self->apdu);
+        self->apdu = NULL;
         IFX_FREE(self->response->data);
+        self->response->data = NULL;
         IFX_FREE(self->response);
+        self->response = NULL;
         IFX_FREE(self->protocol->_properties);
         self->protocol->_properties = NULL;
         self->protocol = NULL;
         self->logger = NULL;
-        self->apdu->data = NULL;
-        self->apdu = NULL;
-        self->response->data = NULL;
-        self->response = NULL;
         self->apdu_error_map_list = NULL;
     }
 }
