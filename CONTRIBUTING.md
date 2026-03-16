@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: Copyright (c) 2025 Infineon Technologies AG
+SPDX-FileCopyrightText: Copyright (c) 2025-2026 Infineon Technologies AG
 SPDX-License-Identifier: CC-BY-4.0
 -->
 
@@ -16,12 +16,12 @@ contributions.
 
 ## Table of contents
 
-- [I Have a question](#i-have-a-question)
-- [I Want to contribute](#i-want-to-contribute)
+- [I have a question](#i-have-a-question)
+- [I want to contribute](#i-want-to-contribute)
   - [Reporting bugs](#reporting-bugs)
   - [Suggesting enhancements](#suggesting-enhancements)
 
-## I Have a question
+## I have a question
 
 > If you want to ask a question, we assume that you have read the available
 > [documentation](README.md).
@@ -45,7 +45,7 @@ We will then take care of the issue as soon as possible.
 ## I want to contribute
 
 > ### Legal notice
-> 
+>
 > When contributing to this project, you must agree that you have authored 100%
 > of the content, that you have the necessary rights to the content and that the
 > content you contribute may be provided under the project license.
@@ -66,7 +66,7 @@ steps in advance to help us fix any potential bug as fast as possible.
   check [this section](#i-have-a-question)).
 - To see if other users have experienced (and potentially already solved) the
   same issue you are having, check if there is not already a bug report existing
-  for your bug or error in the [bug tracker](issues?q=label%3Abug).
+  for your bug or error in the [bug tracker](https://github.com/Infineon/optiga-nbt-lib-c/issues?q=label%3Abug).
 - Also make sure to search the internet (including Stack Overflow) to see if
   users outside of the GitHub community have discussed the issue.
 - Collect information about the bug:

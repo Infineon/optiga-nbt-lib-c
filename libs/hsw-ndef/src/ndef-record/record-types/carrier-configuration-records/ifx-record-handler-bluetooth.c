@@ -1,5 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-//
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 // SPDX-License-Identifier: MIT
 
 /**
@@ -160,7 +159,7 @@ ifx_status_t record_handler_bt_encode(const void *record_details,
 
         index += BYTE_LENGTH_OF_OOB_DATA_LENGTH;
 
-        if ((NULL != (bt_record->device_addr)) && (IFX_SUCCESS == status))
+        if (IFX_SUCCESS == status)
         {
             IFX_MEMCPY(&((*payload)[index]), bt_record->device_addr,
                        IFX_RECORD_BT_DEV_ADDR_LEN);

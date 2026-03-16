@@ -1,5 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-//
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 // SPDX-License-Identifier: MIT
 
 /**
@@ -205,6 +204,12 @@ ifx_status_t ifx_apdu_decode(ifx_apdu_t *apdu, const uint8_t *data,
 ifx_status_t ifx_apdu_encode(const ifx_apdu_t *apdu, uint8_t **buffer,
                              size_t *buffer_len)
 {
+    // Validate parameters
+    if ((apdu == NULL) || (buffer == NULL) || (buffer_len == NULL))
+    {
+        return IFX_ERROR(LIB_APDU, IFX_APDU_ENCODE, IFX_ILLEGAL_ARGUMENT);
+    }
+
     // Calculate required buffer size (minimum 4 bytes for header)
     size_t buffer_size = 4U + apdu->lc;
     bool extended_length = (apdu->lc > 0xffU) || (apdu->le > IFX_APDU_LE_ANY);
@@ -392,6 +397,14 @@ void ifx_apdu_destroy(ifx_apdu_t *apdu)
 ifx_status_t ifx_apdu_response_decode(ifx_apdu_response_t *response,
                                       const uint8_t *data, size_t data_len)
 {
+    // Validate parameters
+    if ((response == NULL) || (data == NULL))
+    {
+        // clang-format off
+        return IFX_ERROR(LIB_APDU, IFX_APDU_RESPONSE_DECODE, IFX_ILLEGAL_ARGUMENT);
+        // clang-format on
+    }
+
     // Minimum APDU response length 2 bytes -> status word only
     if (data_len < 2U)
     {
@@ -435,6 +448,14 @@ ifx_status_t ifx_apdu_response_decode(ifx_apdu_response_t *response,
 ifx_status_t ifx_apdu_response_encode(const ifx_apdu_response_t *response,
                                       uint8_t **buffer, size_t *buffer_len)
 {
+    // Validate parameters
+    if ((response == NULL) || (buffer == NULL) || (buffer_len == NULL))
+    {
+        // clang-format off
+        return IFX_ERROR(LIB_APDU, IFX_APDU_RESPONSE_ENCODE, IFX_ILLEGAL_ARGUMENT);
+        // clang-format on
+    }
+
     // Allocate memory for buffer
     *buffer = (uint8_t *) malloc(response->len + 2U);
     if (*buffer == NULL)

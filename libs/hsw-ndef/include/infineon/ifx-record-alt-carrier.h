@@ -1,5 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-//
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 // SPDX-License-Identifier: MIT
 
 /**
@@ -43,10 +42,7 @@ extern "C" {
 /**
  * \brief Type information for alternative carrier record 'ac'
  */
-#define IFX_RECORD_AC_TYPE                                                     \
-    {                                                                          \
-        0x61, 0x63                                                             \
-    }
+#define IFX_RECORD_AC_TYPE           {0x61, 0x63}
 
 /* enum definitions */
 

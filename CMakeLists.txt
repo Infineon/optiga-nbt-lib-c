@@ -1,10 +1,9 @@
-# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-#
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 # SPDX-License-Identifier: MIT
 
-# ##############################################################################
+# ##################################################################################################
 # Project configuration and settings
-# ##############################################################################
+# ##################################################################################################
 cmake_minimum_required(VERSION 3.14)
 
 # Disable in-source builds
@@ -14,7 +13,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 # Main project configuration
 project(
   hsw-nbt
-  VERSION 1.1.2
+  VERSION 1.2.0
   DESCRIPTION "OPTIGA Authenticate NBT Host Library for C"
   LANGUAGES C CXX)
 
@@ -26,22 +25,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Build options
 option(BUILD_DOCUMENTATION "Build API documentation using doxygen" OFF)
 
-# ##############################################################################
+# ##################################################################################################
 # Submodules with actual functionality
-# ##############################################################################
-# Build system overrides to disable downloads in submodules
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/.cmake/InfineonDownloadOverrides.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/.cmake/InfineonDownloadOverrides.cmake")
-endif()
-
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/tests")
-  include(CTest)
-  add_subdirectory(tests)
-endif()
-
-# Add subdirectories to the build. Make sure the order of the add_subdirectory
-# calls in CMakeLists.txt file in such a way that the dependent library is being
-# built first.
+# ##################################################################################################
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/hsw-error)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/hsw-utils)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/hsw-logger)
@@ -56,9 +42,9 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/hsw-apdu-nbt)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/hsw-ndef)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/hsw-ndef-bp)
 
-# ##############################################################################
+# ##################################################################################################
 # Documentation
-# ##############################################################################
+# ##################################################################################################
 if(BUILD_DOCUMENTATION)
   find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)
   if(DOXYGEN_DOT_EXECUTABLE)
@@ -87,25 +73,39 @@ if(BUILD_DOCUMENTATION)
   add_custom_command(
     OUTPUT "${DOXYGEN_OUTPUT_DIR}/html/index.html"
     COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/docs/images"
+            "${DOXYGEN_OUTPUT_DIR}/html/images"
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "${DOXYGEN_OUTPUT_DIR}/html/images/src"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${DOXYGEN_OUTPUT_DIR}/html/docs/images"
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory
+      "${CMAKE_CURRENT_SOURCE_DIR}/libs/hsw-apdu-nbt/docs/images"
+      "${DOXYGEN_OUTPUT_DIR}/html/docs/images"
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory
+      "${CMAKE_CURRENT_SOURCE_DIR}/libs/hsw-ndef/docs/images"
+      "${DOXYGEN_OUTPUT_DIR}/html/docs/images"
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory
+      "${CMAKE_CURRENT_SOURCE_DIR}/libs/hsw-ndef-bp/docs/images"
+      "${DOXYGEN_OUTPUT_DIR}/html/docs/images"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    DEPENDS
-      "${CMAKE_CURRENT_SOURCE_DIR}/docs/userguide.md"
-      "${CMAKE_CURRENT_SOURCE_DIR}/.cmake/infineon-package-management/README.md"
-      "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
-      hsw-apdu-documentation
-      hsw-apdu-nbt-documentation
-      hsw-apdu-protocol-documentation
-      hsw-ndef-bp-documentation
-      hsw-crc-documentation
-      hsw-i2c-documentation
-      hsw-error-documentation
-      hsw-logger-documentation
-      hsw-ndef-documentation
-      hsw-protocol-documentation
-      hsw-t1prime-documentation
-      hsw-timer-documentation
-      hsw-utils-documentation
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/docs/userguide.md"
+            "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+            hsw-apdu-documentation
+            hsw-apdu-nbt-documentation
+            hsw-apdu-protocol-documentation
+            hsw-ndef-bp-documentation
+            hsw-crc-documentation
+            hsw-i2c-documentation
+            hsw-error-documentation
+            hsw-logger-documentation
+            hsw-ndef-documentation
+            hsw-protocol-documentation
+            hsw-t1prime-documentation
+            hsw-timer-documentation
+            hsw-utils-documentation
     COMMENT "Generating API documentation for '${PROJECT_NAME}' using doxygen")
   add_custom_target(${PROJECT_NAME}-documentation ALL
                     DEPENDS "${DOXYGEN_OUTPUT_DIR}/html/index.html")

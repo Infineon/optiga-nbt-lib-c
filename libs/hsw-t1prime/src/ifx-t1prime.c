@@ -1,5 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-//
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 // SPDX-License-Identifier: MIT
 
 /**
@@ -568,13 +567,16 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
                              IFX_T1PRIME_INVALID_BLOCK);
         }
         // Number of retries elapsed and not yet resynchronized
-        if ((number_of_tries == IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES + 1) && (!resynchronized)) {
-            IFX_T1PRIME_LOG(
-                self->_logger, IFX_LOG_TAG, IFX_LOG_WARN,
-                "Giving up block exchange after %d retries. Trying to resynchronize protocol.",
-                IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES);
+        if ((number_of_tries == IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES + 1) &&
+            (!resynchronized))
+        {
+            IFX_T1PRIME_LOG(self->_logger, IFX_LOG_TAG, IFX_LOG_WARN,
+                            "Giving up block exchange after %d retries. Trying "
+                            "to resynchronize protocol.",
+                            IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES);
             status = ifx_t1prime_s_resynch(self);
-            if (status != IFX_SUCCESS) {
+            if (status != IFX_SUCCESS)
+            {
                 return status;
             }
             ifx_t1prime_block_destroy(&transmission_block);
@@ -582,14 +584,14 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
             // Retransmit last I block
             transmission_block.pcb =
                 IFX_T1PRIME_PCB_I(protocol_state->send_counter,
-                                    (remaining - last_information_size) > 0U);
+                                  (remaining - last_information_size) > 0U);
             transmission_block.information_size = last_information_size;
             transmission_block.information =
                 (uint8_t *) malloc(transmission_block.information_size);
             if (transmission_block.information == NULL)
             {
                 return IFX_ERROR(LIB_T1PRIME, IFX_PROTOCOL_TRANSCEIVE,
-                                    IFX_OUT_OF_MEMORY);
+                                 IFX_OUT_OF_MEMORY);
             }
             // clang-format off
             memcpy(transmission_block.information, data + offset, transmission_block.information_size); // Flawfinder: ignore
@@ -598,14 +600,19 @@ ifx_status_t ifx_t1prime_transceive(ifx_protocol_t *self, const uint8_t *data,
             number_of_tries = 0U;
             resynchronized = true;
         }
-        // Number of retries elapsed after it was already resynchronized -> give up
-        else if ((number_of_tries == IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES + 1) && resynchronized) {
+        // Number of retries elapsed after it was already resynchronized -> give
+        // up
+        else if ((number_of_tries ==
+                  IFX_T1PRIME_BLOCK_TRANSCEIVE_RETRIES + 1) &&
+                 resynchronized)
+        {
             ifx_t1prime_block_destroy(&transmission_block);
             ifx_t1prime_block_destroy(&response_block);
             IFX_T1PRIME_LOG(
                 self->_logger, IFX_LOG_TAG, IFX_LOG_WARN,
                 "Giving up block exchange after protocol resynchronization.");
-            return IFX_ERROR(LIB_T1PRIME, IFX_PROTOCOL_TRANSCEIVE, IFX_UNSPECIFIED_ERROR);
+            return IFX_ERROR(LIB_T1PRIME, IFX_PROTOCOL_TRANSCEIVE,
+                             IFX_UNSPECIFIED_ERROR);
         }
     }
     // Validate response in loop to handle state

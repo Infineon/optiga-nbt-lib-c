@@ -1,5 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-//
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 // SPDX-License-Identifier: MIT
 
 /**
@@ -27,24 +26,21 @@ extern "C" {
 /**
  * \brief Identifier for model set URI record ID
  */
-#define IFX_RECORD_URI_SET            UINT8_C(0x01)
+#define IFX_RECORD_URI_SET             UINT8_C(0x01)
 
 /**
  * \brief Identifier for model get URI record ID
  */
-#define IFX_RECORD_URI_GET            UINT8_C(0x02)
+#define IFX_RECORD_URI_GET             UINT8_C(0x02)
 
 /**
  * \brief Identifier for model URI record release memory
  */
-#define IFX_RECORD_URI_RELEASE_MEMORY UINT8_C(0x03)
+#define IFX_RECORD_URI_RELEASE_MEMORY  UINT8_C(0x03)
 /**
  * \brief Type information for uri record 'U'
  */
-#define IFX_RECORD_URI_TYPE                                                    \
-    {                                                                          \
-        UINT8_C(0x55)                                                          \
-    }
+#define IFX_RECORD_URI_TYPE            {UINT8_C(0x55)}
 
 /**
  * \brief Identifier code maximum numbers in list

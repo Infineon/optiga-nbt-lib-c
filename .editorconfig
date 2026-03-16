@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023-2026 Infineon Technologies AG
+# SPDX-License-Identifier: CC0-1.0
+
+root = true
+
+[*]
+end_of_line = lf
+indent_style = space
+charset = utf-8
+
+[*.vsdx]
+end_of_line = unset
+indent_style = unset
+charset = unset
+
+# handled with clang format
+# [*.{c,cpp,cxx,h,hpp,hxx}]
+
+# handled with CMake format
+# [{CMakeLists.txt,*.cmake,*.cmake.in}]
+
+[*.md]
+indent_size = 2
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{yml,yaml}]
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[{Doxyfile.in}]
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true

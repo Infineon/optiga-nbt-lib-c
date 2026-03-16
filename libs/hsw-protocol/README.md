@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # Generic Protocol Stacks
 
 This library offers a C interface for reusable protocol stacks similar to the [ISO/OSI Model](https://en.wikipedia.org/wiki/OSI_model).

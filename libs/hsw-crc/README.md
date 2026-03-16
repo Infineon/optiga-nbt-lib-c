@@ -1,4 +1,10 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # CRC Implementations
+
 This library offers reusable Cyclic Redundancy Check (CRC) implementations.
 
 ## Example

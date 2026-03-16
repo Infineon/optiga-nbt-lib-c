@@ -1,4 +1,10 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # NDEF brand protection library
+>
 > C library to encode and decode brand protection NDEF record and messages
 
 The NFC data exchange format (NDEF) specification by [NFC Forum](https://nfc-forum.org/) defines a common data format to exchange information between NFC Forum devices.
@@ -6,12 +12,14 @@ The NFC data exchange format (NDEF) specification by [NFC Forum](https://nfc-for
 This C library provides support to build and parse the NDEF brand protection messages, with support for common NDEF record type definitions.
 
 ## Features
+
 * Build and parse the NDEF brand protection messages
 * Build and parse the NDEF brand protection records
 
 ## Usage
 
 1. Include the following headers
+
   ```c
   #include "infineon/ifx-record-bp.h"
   #include "infineon/ifx-ndef-message.h"
@@ -19,20 +27,23 @@ This C library provides support to build and parse the NDEF brand protection mes
   #include "infineon/ifx-utils.h"
   ```
 
-2. Register the brand protection record into the NDEF C library
+1. Register the brand protection record into the NDEF C library
+
   ```c
   ifx_record_bp_register();
   ```
 
-3. Create a new brand protection record
+1. Create a new brand protection record
+
   ```c
   ifx_record_handle_t handle;
   ifx_record_bp_new(&handle);
   ```
 
-4. Provide custom implementations to encode and decode the certificates
+1. Provide custom implementations to encode and decode the certificates
 
   Example: Certificate encoder custom implementation
+
   ```c
   ifx_status_t x509_certificate_encoder(const void * certificate, ifx_blob_t ** certificate_bytes)
   {
@@ -43,6 +54,7 @@ This C library provides support to build and parse the NDEF brand protection mes
   ```
 
   Example: Certificate decoder custom implementation
+
   ```c
   ifx_status_t x509_certificate_decoder(const ifx_blob_t * certificate_bytes, void * certificate)
   {
@@ -52,12 +64,14 @@ This C library provides support to build and parse the NDEF brand protection mes
   }
   ```
 
-5. Set the custom certificate encoder and decoder handles
+1. Set the custom certificate encoder and decoder handles
+
   ```c
   ifx_record_bp_set_certificate_handlers(&handle, x509_certificate_encoder, x509_certificate_decoder);
   ```
 
-6. Example for defining the certificate data type
+1. Example for defining the certificate data type
+
   ```c
   // Example x509_certificate.
   typedef struct
@@ -72,7 +86,8 @@ This C library provides support to build and parse the NDEF brand protection mes
   } ifx_x509_certificate_example_t;
   ```
 
-7. Assign a certificate to the created brand protection record
+1. Assign a certificate to the created brand protection record
+
   ```c
   // Example: Declare a certificate
   ifx_x509_certificate_example_t certificate;
@@ -80,7 +95,8 @@ This C library provides support to build and parse the NDEF brand protection mes
   ifx_record_bp_set_certificate(&handle, (void *)&certificate);
   ```
 
-8. Use the NDEF C library to encode the brand protection record into an NDEF message
+1. Use the NDEF C library to encode the brand protection record into an NDEF message
+
   ```c
   uint32_t record_count = 0x01;
   ifx_blob_t ndef_message = {0};
@@ -89,29 +105,34 @@ This C library provides support to build and parse the NDEF brand protection mes
 
   This NDEF message can be written into the NDEF file in the tag.
 
-9. Use the NDEF C library to decode the brand protection record from an NDEF message
+1. Use the NDEF C library to decode the brand protection record from an NDEF message
+
   ```c
   ifx_record_handle_t get_record_handle;
   uint32_t get_number_of_records = 0x00;
   ifx_ndef_message_decode(&ndef_message, &get_number_of_records, &get_record_handle);
   ```
 
-10. Get the certificate from the record handle
+1. Get the certificate from the record handle
+
   ```c
   ifx_record_bp_get_certificate(&get_record_handle, &certificate);
   ```
 
-11. Release the memory allocated by the library
+1. Release the memory allocated by the library
+
   ```c
   // free-up the internally allocated memory.
-  status = ifx_ndef_record_release_resource(); 
+  status = ifx_ndef_record_release_resource();
   ```
 
 ## Architecture
 
 Below image described the software architecture of the library.
 
-<img src="./docs/images/hsw-ndef-bp-architecture.png" width="500" />
+<!-- markdownlint-disable MD033 -->
+<img src="docs/images/hsw-ndef-bp-architecture.png" alt="architecture" width="450px">
+<!-- markdownlint-enable MD033 -->
 
 ## Components
 
@@ -122,14 +143,18 @@ Below image described the software architecture of the library.
   This component contains the payload encoders and decoders which can be used to encode and decode the payload details into a byte array.
 
 ## Interaction
+
 Below UML diagram describes the interaction between the components.
 
-<img src="./docs/images/hsw-ndef-bp-interaction.png" width="1200" />
+<!-- markdownlint-disable MD033 -->
+<img src="docs/images/hsw-ndef-bp-interaction.png" alt="interaction" width="1000px">
+<!-- markdownlint-enable MD033 -->
 
 ## Directory structure
+
 The library directory is structured according to the Pitchfork Layout.
 
-```
+```bash
 hsw-ndef-bp
 |-- .cmake/                 # Includes sources for dependency management
 |-- LICENSES/               # Includes list of licenses used for the library
@@ -156,6 +181,6 @@ hsw-ndef-bp
 
 ## References
 
-* Infineon Technologies AG: *OPTIGA&trade; Authenticate NBT, Extended Datasheet*
+* Infineon Technologies AG: *OPTIGA™; Authenticate NBT, Extended Datasheet*
 * NFC Data Exchange Format (NDEF), Technical Specification, NFC Forum™, NDEF 1.0
 * NFC Record Type Definition (RTD), Technical Specification, NFC Forum™, RTD 1.0

@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
 -->
 
 # OPTIGA™ Authenticate NBT Host Library for C: User guide
@@ -56,17 +56,19 @@ The OPTIGA™ Authenticate NBT Host Library for C includes three core libraries 
 * [hsw-ndef](../libs/hsw-ndef/README.md)
 * [hsw-ndef-bp](../libs/hsw-ndef-bp/README.md)
 
-<img src="./images/hsw-nbt-architecture.png" width="300" />
+<!-- markdownlint-disable MD033 -->
+<img src="./images/hsw-nbt-architecture.png" alt="Host library architecture" width="300">
+<!-- markdownlint-enable MD033 -->
 
-**hsw-apdu-nbt**
+#### hsw-apdu-nbt
 
 The NBT APDU library allows the host application to send C-APDUs to the OPTIGA™ Authenticate NBT and receive R-APDUs from the OPTIGA™ Authenticate NBT. This library is intended to be used with I2C as base layer of the communication channel (base layer of the Protocol interface).
 
-**hsw-ndef**
+#### hsw-ndef
 
 The NFC Data Exchange Format (NDEF) specification by NFC Forum defines a common data format to exchange information between NFC Forum devices. This library provides support to build and parse NDEF messages, with support for common NDEF record type definitions. This library can be easily extended to support additional record type definitions.
 
-**hsw-ndef-bp**
+#### hsw-ndef-bp
 
 The NFC brand protection record library is an extension to the NDEF library to create and parse NFC brand protection records for the OPTIGA™ Authenticate NBT. This extended library includes NDEF records and parsers to provide the core brand protection functionality of the OPTIGA™ Authenticate NBT. Brand protection-specific encoding and decoding are handled by the library itself. But this library depends on the `hsw-ndef` library for registering its records and for further NDEF record and message manipulations.
 
@@ -74,22 +76,22 @@ The NFC brand protection record library is an extension to the NDEF library to c
 
 The core libraries are dependent on several other libraries and interfaces. Detailed description of these dependent libraries is provided below.
 
-| Dependent&nbsp;library                                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [hsw-t1prime](../libs/hsw-t1prime/README.md)             | This dependent library implements the GlobalPlatform T=1' protocol which uses timer and I2C platform-specific interfaces to interact with the OPTIGA™ Authenticate NBT via I2C. This dependent library is provided as a separate protocol stack. This library can be built and linked to `hsw-apdu-nbt` core library to communicate via GP T=1' I2C protocol. This dependent library is dependent on interfaces such as timer and I2C. Platform-specific implementations of these interfaces are required to access full functionality of the library. |
-| [hsw-error](../libs/hsw-error/README.md)                 | This dependent library is used for creating and parsing error information.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| [hsw-protocol](../libs/hsw-protocol/README.md)           | This dependent library provides the communication protocol interface for the NBT APDU library. This dependent  library provides functionalities such as initialize, transceive and terminate to communicate with the OPTIGA™ Authenticate NBT. It can be implemented for any communication protocol such as I2C and UART.                                                                                                                                                                                                                              |
-| [hsw-utils](../libs/hsw-utils/README.md)                 | This dependent library provides the utility methods such as for byte conversions, string conversions, bit operations, and encoders/decoders for TLV data.                                                                                                                                                                                                                                                                                                                                                                                                    |
-| [hsw-apdu](../libs/hsw-apdu/README.md)                   | This dependent library is used to build the APDU command bytes and parse the APDU response bytes according to the ISO/IEC 7816-4 specification.                                                                                                                                                                                                                                                                                                                                                                                                              |
-| [hsw-apdu-protocol](../libs/hsw-apdu-protocol/README.md) | This dependent library is used for sending and receiving APDU command bytes according to the ISO/IEC 7816-4 specification.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| [hsw-crc](../libs/hsw-crc/README.md)                     | This dependent library is a generic library used for CRC calculation. This library is used for CRC calculation of GlobalPlatform T=1' protocol stack.                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Dependent library | Description |
+| ----------------- | ----------- |
+| [hsw-t1prime](../libs/hsw-t1prime/README.md) | This dependent library implements the GlobalPlatform T=1' protocol which uses timer and I2C platform-specific interfaces to interact with the OPTIGA™ Authenticate NBT via I2C. This dependent library is provided as a separate protocol stack. This library can be built and linked to `hsw-apdu-nbt` core library to communicate via GP T=1' I2C protocol. This dependent library is dependent on interfaces such as timer and I2C. Platform-specific implementations of these interfaces are required to access full functionality of the library. |
+| [hsw-error](../libs/hsw-error/README.md) | This dependent library is used for creating and parsing error information. |
+| [hsw-protocol](../libs/hsw-protocol/README.md) | This dependent library provides the communication protocol interface for the NBT APDU library. This dependent  library provides functionalities such as initialize, transceive and terminate to communicate with the OPTIGA™ Authenticate NBT. It can be implemented for any communication protocol such as I2C and UART. |
+| [hsw-utils](../libs/hsw-utils/README.md) | This dependent library provides the utility methods such as for byte conversions, string conversions, bit operations, and encoders/decoders for TLV data. |
+| [hsw-apdu](../libs/hsw-apdu/README.md) | This dependent library is used to build the APDU command bytes and parse the APDU response bytes according to the ISO/IEC 7816-4 specification. |
+| [hsw-apdu-protocol](../libs/hsw-apdu-protocol/README.md) | This dependent library is used for sending and receiving APDU command bytes according to the ISO/IEC 7816-4 specification. |
+| [hsw-crc](../libs/hsw-crc/README.md) | This dependent library is a generic library used for CRC calculation. This library is used for CRC calculation of GlobalPlatform T=1' protocol stack. |
 
 The generic platform independent interfaces are provided with the host library to support easy porting to any target MCU. Concrete implementations of these interfaces for the respective target platform are needed to utilize this host library.
 
-| Dependent&nbsp;interface                   | Description                                                                                                                                                                  |
-| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [hsw-i2c](../libs/hsw-i2c/README.md)       | This interface is used for the I2C protocol implementation of the GlobalPlatform T=1' protocol stack.                                                                        |
-| [hsw-timer](../libs/hsw-timer/README.md)   | This interface is used for the timer implementation of the GlobalPlatform T=1' protocol stack.                                                                               |
+| Dependent interface | Description |
+| ------------------- | ----------- |
+| [hsw-i2c](../libs/hsw-i2c/README.md) | This interface is used for the I2C protocol implementation of the GlobalPlatform T=1' protocol stack. |
+| [hsw-timer](../libs/hsw-timer/README.md) | This interface is used for the timer implementation of the GlobalPlatform T=1' protocol stack. |
 | [hsw-logger](../libs/hsw-logger/README.md) | This interface is used for logging information/errors. It offers generic interface that can be populated by concrete implementations, such as file logger or console logger. |
 
 ## Platform-specific implementations
@@ -98,7 +100,7 @@ This host library is written with portability in mind. Wherever possible, platfo
 
 This section will give an overview of the interfaces that need to be implemented to utilize the OPTIGA™ Authenticate NBT Host Library for C on arbitrary platforms.
 
-**hsw-i2c**
+### hsw-i2c
 
 `hsw-i2c` interface is used to abstract the I2C-specific communication functionality from the target platform. This interface is built on the `hsw-protocol` APIs. To implement concrete implementation of I2C driver, (at least) the following functions need to be provided. These functions shall mainly wrap the target MCU's I2C functions that can be used in `hsw-protocol` library.
 
@@ -157,7 +159,7 @@ For the I2C-specific functionality, the following getters and setters also need 
 
 The functions should be self explanatory. For parameter details check their respective docstrings.
 
- **hsw-timer**
+### hsw-timer
 
 The `hsw-timer` interface is used to abstract timer calls from the target platform. Objects of the `ifx_timer_t` struct are used throughout all libraries to measure timeout values and waiting times. For a concrete implementation of the timer interface, (at least) the following function(s) need to be provided. These functions shall mainly wrap the target MCU's timer functions which are defined in the `hsw-timer` interface.
 
@@ -176,7 +178,7 @@ For the timer-specific functionality, the following functions need to be impleme
 
 * `ifx_timer_destroy(ifx_timer_t *timer)`: If `ifx_timer_set()` allocated any dynamic data this function can be used to perform the necessary cleanup.
 
-**hsw-t1prime interrupt handling**
+### hsw-t1prime interrupt handling
 
 The GlobalPlatform T=1' data interrupt handling has been encapsuled and is implemented as a plug-in solution. To add interrupt handling to your physical layer you can provide a custom `ifx_t1prime_irq_handler_t` to the protocol stack using `ifx_t1prime_set_irq_handler()`. This interrupt handler shall wait until the GPIO interrupt has triggered or the given amount of microseconds has elapsed. It is up to the concrete implementation to check which GPIO pin to use and how to check if the time has elapsed. This enables platform-independent code with interrupt handling being an optional plug-in solution. This encapsulation enables reusable interrupt handlers without the need to add protocol-specifics to the physical layer.
 
@@ -184,7 +186,7 @@ To use `hsw-t1prime` interrupt handling, a platform-specific interrupt routine h
 
 Refer to the documentation provided with the t1prime "GlobalPlatform T=1' protocol layer" for further implementation information.
 
-**hsw-logger**
+### hsw-logger
 
 `hsw-logger` interface offers generic `ifx_logger_t` structs that can be populated by concrete implementations. These `ifx_logger_t` structs are self-contained and can therefore be nested, joined, etc. The actual logging function uses `printf` syntax so it should feel familiar to `C` developers. These loggers can be configured at runtime to a specific level to only trace the desired data (Debug, Info, Warning, Error). Concrete platform implementations are required to use the host MCU's preferred logging methods (e.g. stdout, file-logger). To provide concrete implementation of logger interface, (at least) the following function(s)need to be provided. These functions shall mainly wrap the target MCU's logging function which are used in the `hsw-logger` interface.
 
@@ -234,16 +236,16 @@ hsw-nbt
 
 Install the below toolset to build the host library on a Windows platform.
 
- | Tool                                                                                                                           | Usage                                                                                               | Supported version |
- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------- |
- | [CMake](https://cmake.org/)                                                                                                    | Toolchain for the build framework                                                                   | 3.25.1            |
- | [MinGW-w64](https://www.mingw-w64.org/)                                                                                        | GCC Compiler to build libraries on a Windows platform                                               | 8.1.0             |
- | [MSVC](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.4#1743--visual-studio-2022-version-1743) | C/C++ Compiler that comes with 'Visual Studio build tools' to build libraries on a Windows platform | 17.4.3            |
- | [LLVM](https://llvm.org/)                                                                                                      | Clang Compiler to build libraries and clang-format tool to format the source code                   | 17.0.3            |
- | [Doxygen](https://www.doxygen.nl/)                                                                                             | Tool to generate documentation from source code                                                     | 1.9.8             |
- | [Ninja](https://ninja-build.org/)                                                                                              | Build system used with CMake to generate ninja build files                                          | 1.11.1            |
+| Tool | Usage | Supported version |
+| ---- | ----- | ----------------- |
+| [CMake](https://cmake.org/) | Toolchain for the build framework | 3.25.1 |
+| [MinGW-w64](https://www.mingw-w64.org/) | GCC Compiler to build libraries on a Windows platform | 8.1.0 |
+| [MSVC](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.4#1743--visual-studio-2022-version-1743) | C/C++ Compiler that comes with 'Visual Studio build tools' to build libraries on a Windows platform | 17.4.3 |
+| [LLVM](https://llvm.org/) | Clang Compiler to build libraries and clang-format tool to format the source code | 17.0.3 |
+| [Doxygen](https://www.doxygen.nl/) | Tool to generate documentation from source code | 1.9.8 |
+| [Ninja](https://ninja-build.org/) | Build system used with CMake to generate ninja build files | 1.11.1 |
 
-If you are using the library on an MCU as target, build the library using the MCU platform-specific compiler and link it to the application. For example, to use the OPTIGA™ Authenticate NBT Host Library for C on a PSoC™ which uses the ARM Cortex-M architecture, build the library using the ARM-GCC compiler `arm-none-eabi-gcc` and integrate it into the PSoC™ application.
+If you are using the library on an MCU as target, build the library using the MCU platform-specific compiler and link it to the application. For example, to use the OPTIGA™ Authenticate NBT Host Library for C on a PSOC™ which uses the ARM Cortex-M architecture, build the library using the ARM-GCC compiler `arm-none-eabi-gcc` and integrate it into the PSOC™ application.
 
 ## CMake build system
 
@@ -358,7 +360,7 @@ Typically,
 
 ### Enable the I2C option for building
 
- If not using `CMake` to build the code, you will need to define these macros for compilation:
+If not using `CMake` to build the code, you will need to define these macros for compilation:
 
 * Define the `IFX_T1PRIME_USE_I2C` macro with a *true* value (for example: `1`) when compiling your code (this enables the build for the `I2C` variant of the platform setup).
 
@@ -366,7 +368,9 @@ Typically,
 
 An example interaction between the host library's components and an application is illustrated below with a use case: *Update URI data in an application file of the OPTIGA™ Authenticate NBT*. The `hsw-ndef` library is used to prepare a URI record and update it on the file system of the OPTIGA™ Authenticate NBT using the `hsw-apdu-nbt` library.
 
-<img src="./images/hsw-nbt-interaction.png" width="800" />
+<!-- markdownlint-disable MD033 -->
+<img src="./images/hsw-nbt-interaction.png" alt="Library interaction overview" width="800">
+<!-- markdownlint-enable MD033 -->
 
 ## Host library usage
 
@@ -385,18 +389,18 @@ The usage of OPTIGA™ Authenticate NBT Host Library for C's APIs to update a UR
 2. Use the GP T=1' protocol channel as an interface to communicate with the OPTIGA™ Authenticate NBT
 
     ```c
-    /** GP T=1' I2C protocol - PSoC™6 Host MCU */
+    /** GP T=1' I2C protocol - PSOC™6 Host MCU */
     // Protocol to handle the GP T=1' I2C protocol communication with tag
     ifx_protocol_t gp_i2c_protocol;
 
-    // Protocol to handle communication with PSoC™6 I2C driver
+    // Protocol to handle communication with PSOC™6 I2C driver
     ifx_protocol_t psoc6_i2c_driver_protocol;
     /* Initialize protocol driver layer here with I2C implementation.
     Note: Does not work without initialized driver layer for I2C. */
 
     // code placeholder
 
-    // Use GP T=1' protocol channel as a interface to communicate with the OPTIGA™ Authenticate NBT
+    // Use GP T=1' protocol channel as an interface to communicate with the OPTIGA™ Authenticate NBT
     status = ifx_t1prime_initialize(&gp_i2c_protocol, &psoc6_i2c_driver_protocol);
     status = ifx_protocol_activate(&gp_i2c_protocol, NULL, NULL);
     ```
@@ -444,7 +448,7 @@ The PT mode is enabled by configuring the IRQ function to PT-IRQ. To handle pass
 
 The host library's code is statically analyzed using several tools to ensure high code quality. Run all checks (or just a subset) using the tools described here.
 
-#### _Cppcheck_
+#### *Cppcheck*
 
 The main tool for analyzing the code is [Cppcheck](https://cppcheck.sourceforge.io/). It is widely used and can help find a plethora of potential bugs. For convenience, a suppressions file can be found under (*data/cppcheck.suppressions*) in every library that can be used in conjunction with exported cmake compile commands.
 
@@ -466,7 +470,7 @@ cd ../
 cppcheck --suppressions-list=data/cppcheck.suppressions --enable=all --inconclusive --xml --xml-version=2 --project=build/compile_commands.json --output-file=cppcheck_report.xml
 ```
 
-#### _Flawfinder_
+#### *Flawfinder*
 
 Additional static code analysis can be performed using [Flawfinder](https://dwheeler.com/flawfinder/).
 
@@ -476,7 +480,7 @@ flawfinder libs/**/include/ libs/**/src/
 
 ### Code formatter
 
-#### _clang-format_
+#### *clang-format*
 
 The source code of the host library is formatted using clang-format tool.
 
@@ -484,7 +488,7 @@ The source code of the host library is formatted using clang-format tool.
 find . \( -name '*.c' -o -name '*.h' \) -exec clang-format --style=file:.clang-format -i {} \;
 ```
 
-#### _cmake-format_
+#### *cmake-format*
 
 The .cmake and CMakeLists.txt files of the host library is formatted using cmake-format tool.
 

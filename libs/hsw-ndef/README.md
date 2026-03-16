@@ -1,4 +1,10 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # NFC data exchange format (NDEF) library
+
 > C library to encode and decode the NDEF messages
 
 The NFC data exchange format (NDEF) specification by [NFC Forum](https://nfc-forum.org/) defines a common data format to exchange information between NFC Forum devices. An NDEF message is composed of one or more NDEF records. Each NDEF record contains the record type information and a payload.
@@ -36,7 +42,7 @@ This C library provides support to build and parse the NDEF messages, with suppo
   #include "infineon/ifx-utils.h"
   ```
 
-2. Encode the URI record
+1. Encode the URI record
 
   ```c
   ifx_record_handle_t handles[2];
@@ -64,7 +70,7 @@ This C library provides support to build and parse the NDEF messages, with suppo
   ifx_record_uri_set_uri(&handles[1], &uri_data_2);
   ```
 
-3. Encode the NDEF message
+1. Encode the NDEF message
 
   ```c
   ifx_blob_t ndef_message;
@@ -73,7 +79,7 @@ This C library provides support to build and parse the NDEF messages, with suppo
   ifx_status_t status = ifx_ndef_message_encode(&handles[0], number_of_records, &ndef_message);
   ```
 
-4. Decode the NDEF message
+1. Decode the NDEF message
 
   ```c
   uint32_t no_of_records = 0x00;
@@ -82,7 +88,7 @@ This C library provides support to build and parse the NDEF messages, with suppo
   status = ifx_ndef_message_decode(&ndef_message, &no_of_records, (ifx_record_handle_t *)&handles);
   ```
 
-5. Decode the URI record
+1. Decode the URI record
 
   ```c
   uint8_t identifier_code = 0;
@@ -100,19 +106,21 @@ This C library provides support to build and parse the NDEF messages, with suppo
   // Get the URI record combining URI field with identifier
   status = ifx_record_uri_get_uri_with_identifier(&handles[0], &uri_identifier);
   ```
-  
-6. Release the memory allocated by the library 
+
+1. Release the memory allocated by the library
 
   ```c
   // free-up the internally allocated memory.
-  status = ifx_ndef_record_release_resource(); 
+  status = ifx_ndef_record_release_resource();
   ```
 
 ## Architecture
 
 This image shows the software architecture of the library.
 
-<img src="./docs/images/hsw-ndef-architecture.png" width="500" />
+<!-- markdownlint-disable MD033 -->
+<img src="docs/images/hsw-ndef-architecture.png" alt="hsw-ndef-archtitecture" width="500px">
+<!-- markdownlint-enable MD033 -->
 
 ### Components
 
@@ -129,14 +137,18 @@ This image shows the software architecture of the library.
   This component contains the payload encoders and decoders, which can be used to encode and decode the payload details into a byte array.
 
 ### Interaction
+
 Below UML diagram describes the interaction between the components.
 
-<img src="./docs/images/hsw-ndef-interaction.png" width="1000" />
+<!-- markdownlint-disable MD033 -->
+<img src="docs/images/hsw-ndef-interaction.png" alt="hsw-ndef-interaction" width="1000px">
+<!-- markdownlint-enable MD033 -->
 
 ### Directory structure
+
 The code is structured according to the Pitchfork Layout.
 
-```
+```bash
 hsw-ndef
 |-- .cmake/                 # Includes sources for dependency management
 |-- LICENSES/               # Includes list of licenses used for the library

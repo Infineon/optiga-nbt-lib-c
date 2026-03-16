@@ -1,5 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-//
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 // SPDX-License-Identifier: MIT
 
 /**
@@ -41,10 +40,7 @@ extern "C" {
 /**
  * \brief Type information for error record 'err'
  */
-#define IFX_RECORD_ERROR_TYPE                                                  \
-    {                                                                          \
-        0x65, 0x72, 0x72                                                       \
-    }
+#define IFX_RECORD_ERROR_TYPE           {0x65, 0x72, 0x72}
 
 /* Structure definitions */
 /**

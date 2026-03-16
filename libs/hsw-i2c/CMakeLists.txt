@@ -1,10 +1,9 @@
-# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-#
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 # SPDX-License-Identifier: MIT
 
-# ##############################################################################
+# ##################################################################################################
 # Project configuration and settings
-# ##############################################################################
+# ##################################################################################################
 cmake_minimum_required(VERSION 3.14)
 
 # Disable in-source builds
@@ -28,40 +27,24 @@ option(BUILD_DOCUMENTATION "Build API documentation using doxygen" ON)
 set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/infineon/ifx-i2c.h")
 set(MOCK_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/ifx-i2c-mock.c")
 
-# ##############################################################################
-# Dependencies
-# ##############################################################################
-# Check local overrides for CI system, etc.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.cmake/InfineonDownloadOverrides.cmake")
-  include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/InfineonDownloadOverrides.cmake")
-endif()
-
-# Actually load dependencies
-include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/infineon-package-management/\
-InfineonPackageManagement.cmake")
-require_infineon_package(NAME hsw-error)
-require_infineon_package(NAME hsw-protocol)
-
-# ##############################################################################
+# ##################################################################################################
 # Library
-# ##############################################################################
+# ##################################################################################################
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(Infineon::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-target_link_libraries(${PROJECT_NAME} INTERFACE Infineon::hsw-error
-                                                Infineon::hsw-protocol)
+target_link_libraries(${PROJECT_NAME} INTERFACE Infineon::hsw-error Infineon::hsw-protocol)
 target_include_directories(
-  ${PROJECT_NAME}
-  INTERFACE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-            "$<INSTALL_INTERFACE:include>")
+  ${PROJECT_NAME} INTERFACE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                            "$<INSTALL_INTERFACE:include>")
 
 # Mock version that can be used for testing
 add_library(${PROJECT_NAME}-mock ${HEADERS} ${MOCK_SOURCES})
 add_library(Infineon::${PROJECT_NAME}-mock ALIAS ${PROJECT_NAME}-mock)
 target_link_libraries(${PROJECT_NAME}-mock PUBLIC ${PROJECT_NAME})
 
-# ##############################################################################
+# ##################################################################################################
 # Documentation
-# ##############################################################################
+# ##################################################################################################
 if(BUILD_DOCUMENTATION)
   find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)
   if(DOXYGEN_DOT_EXECUTABLE)
@@ -91,21 +74,16 @@ if(BUILD_DOCUMENTATION)
     OUTPUT "${DOXYGEN_OUTPUT_DIR}/html/index.html"
     COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    DEPENDS
-      "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
-      "${CMAKE_CURRENT_SOURCE_DIR}/.cmake/infineon-package-management/README.md"
-      "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
-      ${HEADERS}
-      ${PROJECT_NAME}
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" ${HEADERS} ${PROJECT_NAME}
     COMMENT "Generating API documentation for '${PROJECT_NAME}' using doxygen")
   add_custom_target(${PROJECT_NAME}-documentation ALL
                     DEPENDS "${DOXYGEN_OUTPUT_DIR}/html/index.html")
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Installation
-# ##############################################################################
+# ##################################################################################################
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 

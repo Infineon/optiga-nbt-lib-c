@@ -1,10 +1,9 @@
-# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-#
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 # SPDX-License-Identifier: MIT
 
-# ##############################################################################
+# ##################################################################################################
 # Project configuration and settings
-# ##############################################################################
+# ##################################################################################################
 cmake_minimum_required(VERSION 3.14)
 
 # Disable in-source builds
@@ -14,7 +13,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 # Main project configuration
 project(
   hsw-t1prime
-  VERSION 0.2.2
+  VERSION 0.2.3
   DESCRIPTION "Global Platform T=1' Protocol"
   LANGUAGES C CXX)
 
@@ -23,8 +22,7 @@ set(CMAKE_C_STANDARD 99)
 
 # Build options
 option(BUILD_DOCUMENTATION "Build API documentation using doxygen" ON)
-option(IFX_T1PRIME_USE_I2C
-       "Build T=1' for I2C interface (For SPI interface, set it OFF)" ON)
+option(IFX_T1PRIME_USE_I2C "Build T=1' for I2C interface (For SPI interface, set it OFF)" ON)
 
 # Enables T1PRIME library logs
 option(IFX_T1PRIME_LOG_ENABLE "Enables the T1PRIME library logs" ON)
@@ -36,40 +34,19 @@ endif()
 
 # Input files
 set(SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/ifx-t1prime.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/ifx-t1prime.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/ifx-t1prime.c" "${CMAKE_CURRENT_SOURCE_DIR}/src/ifx-t1prime.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/t1prime/ifx-t1prime-datastructures.h")
 set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/infineon/ifx-t1prime.h"
             "${CMAKE_CURRENT_SOURCE_DIR}/include/infineon/ifx-t1prime-lib.h")
 
-# ##############################################################################
-# Dependencies
-# ##############################################################################
-# Actually load dependencies
-include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/CPM.cmake")
-include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/utils.cmake")
-
-add_package_if_not_exists(hsw-error "../hsw-error.git" "6712781fc3fff696e993cfc53d2ab8b656056cfd")
-add_package_if_not_exists(hsw-crc "../hsw-crc.git" "c44c8d7ac4d0929041881c784cd18048bea21b82")
-add_package_if_not_exists(hsw-logger "../hsw-logger.git" "304d0f74af02e4e91e8ad3d4e977fdc2616e81ad")
-add_package_if_not_exists(hsw-timer "../hsw-timer.git" "efdc79f81e639836b2ac3f797ba78abd403af2fb")
-add_package_if_not_exists(hsw-protocol "../hsw-protocol.git" "73e49383d203d7cc6f353fa35a3f856e1cbf78bb")
-
-if(${IFX_T1PRIME_USE_I2C})
-add_package_if_not_exists(hsw-i2c "../hsw-i2c.git" "bb244c9c6292bff14b9f1b004bb72b5a6a08637e")
-else()
-  message("Not supported, only I2C supported.")
-endif()
-
-# ##############################################################################
+# ##################################################################################################
 # Library
-# ##############################################################################
+# ##################################################################################################
 add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 add_library(Infineon::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_link_libraries(
-  ${PROJECT_NAME}
-  PUBLIC Infineon::hsw-error Infineon::hsw-crc Infineon::hsw-timer
-         Infineon::hsw-protocol Infineon::hsw-logger)
+  ${PROJECT_NAME} PUBLIC Infineon::hsw-error Infineon::hsw-crc Infineon::hsw-timer
+                         Infineon::hsw-protocol Infineon::hsw-logger)
 if(${IFX_T1PRIME_USE_I2C})
   target_compile_definitions(${PROJECT_NAME} PRIVATE IFX_T1PRIME_INTERFACE_I2C)
   target_link_libraries(${PROJECT_NAME} PUBLIC Infineon::hsw-i2c)
@@ -78,13 +55,12 @@ else()
 endif()
 target_include_directories(
   ${PROJECT_NAME}
-  PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-         "$<INSTALL_INTERFACE:include>"
+  PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>" "$<INSTALL_INTERFACE:include>"
   PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
 
-# ##############################################################################
+# ##################################################################################################
 # Documentation
-# ##############################################################################
+# ##################################################################################################
 if(BUILD_DOCUMENTATION)
   find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)
   if(DOXYGEN_DOT_EXECUTABLE)
@@ -114,19 +90,16 @@ if(BUILD_DOCUMENTATION)
     OUTPUT "${DOXYGEN_OUTPUT_DIR}/html/index.html"
     COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    DEPENDS
-      "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
-      "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
-      ${PROJECT_NAME}
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" ${PROJECT_NAME}
     COMMENT "Generating API documentation for '${PROJECT_NAME}' using doxygen")
   add_custom_target(${PROJECT_NAME}-documentation ALL
                     DEPENDS "${DOXYGEN_OUTPUT_DIR}/html/index.html")
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Sub-Directories
-# ##############################################################################
+# ##################################################################################################
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
   if(IFX_ENABLE_TEST)
     include(CTest)
@@ -134,9 +107,9 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
   endif()
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Installation
-# ##############################################################################
+# ##################################################################################################
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 

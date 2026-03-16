@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # Generic Logging Interface
 
 This library offers a `C` interface for logging data.

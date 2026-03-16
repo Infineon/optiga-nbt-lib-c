@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # C Interface for Joinable Timers
 
 This is a header-only `C` interface for `ifx_timer_t` objects. No actual implementation is provided rather developers can use the header to have the same code running on different platforms by linking to concrete implementations.

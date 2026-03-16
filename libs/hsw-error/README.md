@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # Infineon Error Library
 
 This library offers utilities to create and decode C style `ifx_status_t` error codes.
@@ -11,14 +16,15 @@ All **Infineon** host software libraries therefore encode their errors according
 | `30-24` | Library identifier (e.g. `0x01` for `hsw-apdu` library)                                                                                         |
 | `23-16` | Module identifier (e.g. `0x10` for `apdu-response` module)                                                                                      |
 | `15-8`  | Function identifier in module (e.g. `0x03` for `ifx_apdu_response_decode` in `hsw-apdu` library)                                                |
-| `7-0`   | Function-specific error reason (e.g. `0xFE` out of memory).<br>Values between 0xF0 and 0xFF are reserved for reusable error codes defined here. |
+| `7-0`   | Function-specific error reason (e.g. `0xFE` out of memory). Values between 0xF0 and 0xFF are reserved for reusable error codes defined here.    |
 
 A return value of `0x811003FE` would therefore indicate:
-  * Bit `31` is set -> **error**.
-  * Bits `30-24` are set to `0x01` -> `hsw-apdu` library
-  * Bits `23-16` are set to `0x10` -> `apdu-response` module
-  * Bits `15-8` are set to `0x03` -> `ifx_apdu_response_decode` function
-  * Bits `7-0` are set to `0xFE` -> **Out of memory**
+
+* Bit `31` is set -> **error**.
+* Bits `30-24` are set to `0x01` -> `hsw-apdu` library
+* Bits `23-16` are set to `0x10` -> `apdu-response` module
+* Bits `15-8` are set to `0x03` -> `ifx_apdu_response_decode` function
+* Bits `7-0` are set to `0xFE` -> **Out of memory**
 
 ## Example
 
@@ -42,7 +48,7 @@ if (ifx_error_check(error_code))
           break;
         default:
           printf("Unknown error during APDU encoding\n");
-         break;
+          break;
       }
       break;
     default:

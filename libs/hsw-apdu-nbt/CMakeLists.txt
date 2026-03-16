@@ -1,10 +1,9 @@
-# SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-#
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 # SPDX-License-Identifier: MIT
 
-# ##############################################################################
+# ##################################################################################################
 # Project configuration and settings
-# ##############################################################################
+# ##################################################################################################
 cmake_minimum_required(VERSION 3.14)
 
 # Disable in-source builds
@@ -56,46 +55,23 @@ set(HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/include/infineon/nbt-errors.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/infineon/nbt-parse-response.h")
 
-# ##############################################################################
-# Dependencies
-# ##############################################################################
-# Check local overrides for CI system.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.cmake/InfineonDownloadOverrides.cmake")
-  include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/InfineonDownloadOverrides.cmake")
-endif()
-
-# Actually load dependencies
-include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/infineon-package-management/\
-InfineonPackageManagement.cmake")
-# Note: Order of inclusion  of deps matters while using local packages. Hence
-# add it in order that no packages are overrided with url from cmake/_deps
-# folder
-require_infineon_package(NAME hsw-error)
-require_infineon_package(NAME hsw-utils)
-require_infineon_package(NAME hsw-logger)
-require_infineon_package(NAME hsw-protocol)
-require_infineon_package(NAME hsw-apdu)
-require_infineon_package(NAME hsw-apdu-protocol)
-
-# ##############################################################################
+# ##################################################################################################
 # Library
-# ##############################################################################
+# ##################################################################################################
 add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 add_library(Infineon::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_link_libraries(
-  ${PROJECT_NAME}
-  PUBLIC Infineon::hsw-error Infineon::hsw-apdu Infineon::hsw-logger
-         Infineon::hsw-protocol Infineon::hsw-apdu-protocol Infineon::hsw-utils)
+  ${PROJECT_NAME} PUBLIC Infineon::hsw-error Infineon::hsw-apdu Infineon::hsw-logger
+                         Infineon::hsw-protocol Infineon::hsw-apdu-protocol Infineon::hsw-utils)
 
 target_include_directories(
   ${PROJECT_NAME}
-  PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-         "$<INSTALL_INTERFACE:include>"
+  PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>" "$<INSTALL_INTERFACE:include>"
   PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>")
 
-# ##############################################################################
+# ##################################################################################################
 # Documentation
-# ##############################################################################
+# ##################################################################################################
 if(BUILD_DOCUMENTATION)
   find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)
   if(DOXYGEN_DOT_EXECUTABLE)
@@ -125,20 +101,16 @@ if(BUILD_DOCUMENTATION)
     OUTPUT "${DOXYGEN_OUTPUT_DIR}/html/index.html"
     COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    DEPENDS
-      "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
-      "${CMAKE_CURRENT_SOURCE_DIR}/.cmake/infineon-package-management/README.md"
-      "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
-      ${PROJECT_NAME}
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_SOURCE_DIR}/data/Doxyfile.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" ${PROJECT_NAME}
     COMMENT "Generating API documentation for '${PROJECT_NAME}' using doxygen")
   add_custom_target(${PROJECT_NAME}-documentation ALL
                     DEPENDS "${DOXYGEN_OUTPUT_DIR}/html/index.html")
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Sub-Directories
-# ##############################################################################
+# ##################################################################################################
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
   if(IFX_ENABLE_TEST)
     include(CTest)
@@ -146,9 +118,9 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
   endif()
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Installation
-# ##############################################################################
+# ##################################################################################################
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 

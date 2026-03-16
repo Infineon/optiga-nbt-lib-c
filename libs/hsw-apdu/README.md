@@ -1,4 +1,10 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # APDU Library
+
 This library offers utilities to encode and decode [APDU](https://en.wikipedia.org/wiki/Smart_card_application_protocol_data_unit) objects as well as their responses.
 
 In smart card applications a host typically sends binary `APDU` data to a secure element and reads back a response. This binary data may be somewhat difficult to create and understand depending on the length of the data, etc. This library can be used to work with `APDU`s in a more generic and structured way.

@@ -1,9 +1,16 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # Utilities
 
-This library offers general utilities used by the different Infineon host software libraries.This library offers general utilities used by the different Infineon host software libraries.
+This library offers general utilities used by the different Infineon host software libraries.
 
 ## Example
+
 - Example code for concatenating two `ifx_blob_t` type data structures.
+
   ```c
   #include "infineon/ifx-error.h"
   #include "infineon/ifx-utils.h"

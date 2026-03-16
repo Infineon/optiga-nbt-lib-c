@@ -1,5 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Infineon Technologies AG
-//
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 // SPDX-License-Identifier: MIT
 
 /**
@@ -22,7 +21,7 @@ extern "C" {
  * Bits: 7-0     Module identifier code
  */
 #define IFX_MODULE(library_id, module_id)                                      \
-    (uint16_t)(((library_id & 0x7F) << 8) | (module_id & 0xFF))
+    (uint16_t) (((library_id & 0x7F) << 8) | (module_id & 0xFF))
 
 /**
  * \brief Default status code for successful calls to any function.

@@ -1,4 +1,10 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # APDU Protocol Library
+
 > Protocol Stack Extension for APDU Exchange
 
 This library is built on top of the generic `hsw-protocol` library and offers an extended interface for exchanging [APDU](https://en.wikipedia.org/wiki/Smart_card_application_protocol_data_unit)s.

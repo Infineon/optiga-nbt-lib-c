@@ -1,10 +1,15 @@
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # NBT APDU library
 
 > C library to communicate with the OPTIGA&trade; Authenticate NBT
 
 The OPTIGA&trade; Authenticate NBT is a dynamic and secure turn-key solution for embedded NFC tag applications with varying levels of security and communication. The OPTIGA&trade; Authenticate NBT communicates with the smart phones and NFC readers via NFC and with the host MCU via I2C.
 
-The OPTIGA&trade; Authenticate NBT APDU library allows the host application to send C-APDUs and receive R-APDUs from the OPTIGA&trade; Authenticate NBT controller. This library can be used with any communication channel, such as NFC and I2C.  
+The OPTIGA&trade; Authenticate NBT APDU library allows the host application to send C-APDUs and receive R-APDUs from the OPTIGA&trade; Authenticate NBT controller. This library can be used with any communication channel, such as NFC and I2C.
 
 ## Features
 
@@ -25,7 +30,7 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
     #include "infineon/ifx-utils.h"
     #include "infineon/nbt-apdu.h"
     #include "infineon/nbt-cmd.h"
-    // Add the headers of I2C protocol implementation libraries (Example: PSoC6)
+    // Add the headers of I2C protocol implementation libraries (Example: PSOC6)
     // Add the headers of logger implementation libraries (Example: File logger)
     ```
 
@@ -42,7 +47,7 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
     // Initialize the logger using the platform-specific logger implementation APIs.
     // Note: Without this initialization, the logger does not work. Refer`hsw-nbt/docs/userguide.md` for platform-specific implementations.
 
-        // Code placeholder 
+        // Code placeholder
 
     ifx_logger_set_level(&logger_handle, IFX_LOG_INFO);
     ```
@@ -55,16 +60,16 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
     // Protocol to handle the GP T=1' I2C protocol communication with tag
     ifx_protocol_t t1prime_protocol;
 
-    // Protocol to handle the MCU I2C drivers functionalities. 
+    // Protocol to handle the MCU I2C drivers functionalities.
     ifx_protocol_t mcu_i2c_driver;
 
     // Initialize the `ifx_protocol_t` object with the concrete implementation of the MCU I2C driver.
     // I2C protocol does not work without this initialization. Refer `hsw-nbt/docs/userguide.md` for platform-specific implementations.
-    
+
         // Code placeholder
 
     // Use GP prime protocol channel as an interface to communicate with card.
-    // Add I2C and Timer concrete implementation.  
+    // Add I2C and Timer concrete implementation.
     status = ifx_t1prime_initialize(&t1prime_protocol, &mcu_i2c_driver);
 
     status = ifx_protocol_activate(&t1prime_protocol, NULL, NULL);
@@ -74,7 +79,7 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
 
     ```c
     ifx_protocol_t mcu_i2c_driver;
-    // Interface realization of PSoC6 I2C driver.
+    // Interface realization of PSOC6 I2C driver.
     status = ifx_i2c_psoc6_initialize(&mcu_i2c_driver, &logger_handle);
     ```
 
@@ -96,8 +101,8 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
     ```c
     // Select the OPTIGA&trade; Authenticate NBT application.
     status = nbt_select_application(&command_set);
-    if (ifx_error_check(status) || !IFX_CHECK_SW_OK(command_set.response->sw)) 
-    {    
+    if (ifx_error_check(status) || !IFX_CHECK_SW_OK(command_set.response->sw))
+    {
         // Read the corresponding error message.
         uint8_t *message = nbt_error_message_get(&command_set);
 
@@ -135,37 +140,41 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
 
 This image shows the software architecture of the library.
 
-<img src="./docs/images/hsw-apdu-nbt-architecture.png" width="500" />
+<!-- markdownlint-disable MD033 -->
+<img src="docs/images/hsw-apdu-nbt-architecture.png" alt="Software architecture of the library" width="500px">
+<!-- markdownlint-enable MD033 -->
 
 ## Components
 
 * **Command set**
-This component acts as the API interface for the host application. This module is responsible for coordinating the building of APDU commands, sending the commands to the secure element through the communication interface, and receiving response from the secure element. 
+This component acts as the API interface for the host application. This module is responsible for coordinating the building of APDU commands, sending the commands to the secure element through the communication interface, and receiving response from the secure element.
 * **Command builder**
-This component helps in framing the command APDUs according to the OPTIGA&trade; Authenticate NBT applet specification. 
+This component helps in framing the command APDUs according to the OPTIGA&trade; Authenticate NBT applet specification.
 * **Response parser**
-This component helps in decoding the response APDUs including response data and status word according to the OPTIGA&trade; Authenticate NBT applet specification. 
+This component helps in decoding the response APDUs including response data and status word according to the OPTIGA&trade; Authenticate NBT applet specification.
 
 ## Interaction
 
 Below diagram describes the interaction between the components.
 
-<img src="./docs/images/hsw-apdu-nbt-interaction.png" width="500" />
+<!-- markdownlint-disable MD033 -->
+<img src="docs/images/hsw-apdu-nbt-interaction.png" alt="Interaction diagram between components" width="600px">
+<!-- markdownlint-enable MD033 -->
 
 ## Directory structure
 
 The library directory is structured according to the Pitchfork Layout.
 
 ```text
-hsw-apdu-nbt 
+hsw-apdu-nbt
 |-- .cmake/                 # Includes sources for dependency management
-|-- LICENSES/               # Includes list of licenses used for the library 
+|-- LICENSES/               # Includes list of licenses used for the library
 |-- data/                   # Includes Doxygen, cppcheck configuration files
 |-- docs/                   # Includes documentation, source files, images, and the generated API reference
 |-- include/                # Public Headers(.h) of the library
 |-- src/                    # Sources(.c) and Private headers(.h) of the library
 |-- .clang-format           # clang-format configuration file
-|-- .gitignore              # Library specific gitignore file 
+|-- .gitignore              # Library specific gitignore file
 |-- CMakeLists.txt          # CMake build configurations for the library
 `-- README.md               # Overview of the hsw-apdu-nbt library
 ```
@@ -176,7 +185,7 @@ hsw-apdu-nbt
     This dependent library is used for creating and parsing error information.
 
 * **hsw-protocol**
-    This dependent library provides the communication protocol interface for the OPTIGA&trade; Authenticate NBT APDU library. This protocol provides interfaces such as initialize, transceive, and terminate to communicate with an external application or product. This library can be implemented for any communication type, such as I2C, UART, and NFC. 
+    This dependent library provides the communication protocol interface for the OPTIGA&trade; Authenticate NBT APDU library. This protocol provides interfaces such as initialize, transceive, and terminate to communicate with an external application or product. This library can be implemented for any communication type, such as I2C, UART, and NFC.
 
 * **hsw-utils**
     This dependent library provides the utility methods such as for byte conversions, string conversions, bit operations, and encoders/decoders for 2-byte TLV data.
