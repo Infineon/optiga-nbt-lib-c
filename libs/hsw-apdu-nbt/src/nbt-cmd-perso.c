@@ -9,8 +9,136 @@
 
 #include "infineon/ifx-utils.h"
 #include "infineon/nbt-apdu-lib.h"
+#include "infineon/nbt-cmd.h"
+#include "infineon/ifx-tlv.h"
 #include "nbt-build-apdu-perso.h"
 
+/**
+ * \brief Builds a single personalize data APDU for the given DGI and its data
+ * field, sends it to the secure element, and stores the response.
+ *
+ * \details Encodes the personalize data command via build_personalize_data()
+ * and, on success, exchanges it using the APDU protocol layer. Any build or
+ * transceive failure is logged and returned to the caller.
+ *
+ * \param[in,out] self      Command set with communication protocol and
+ * response.
+ * \param[in] dgi           Data group identifier (DGI) value.
+ * \param[in] dgi_data      Pointer to the data field of the respective DGI.
+ * \return ifx_status_t
+ * \retval IFX_SUCCESS : If API operation is successful
+ * \retval IFX_ILLEGAL_ARGUMENT : If invalid/NULL parameter is passed to
+ * function
+ * \retval IFX_OUT_OF_MEMORY : If any memory allocation fails
+ */
+static ifx_status_t nbt_personalize_data_transceive(nbt_cmd_t *self,
+                                                    uint16_t dgi,
+                                                    const ifx_blob_t *dgi_data)
+{
+    ifx_status_t status = build_personalize_data(dgi, dgi_data, self->apdu);
+    if (ifx_error_check(status))
+    {
+        NBT_APDU_LOG(self->logger, NBT_CMD_LOG_TAG, IFX_LOG_ERROR,
+                     "build_personalize_data unable to build command");
+    }
+    else
+    {
+        status = ifx_apdu_protocol_transceive(self->protocol, self->apdu,
+                                              self->response);
+        if (ifx_error_check(status))
+        {
+            NBT_APDU_LOG(self->logger, NBT_CMD_LOG_TAG, IFX_LOG_ERROR,
+                         "apdu transceive error");
+        }
+    }
+    return status;
+}
+
+/**
+ * \brief Issues multiple personalize data commands to personalize for data not
+ * fitting in a single APDU command. This function is used for personalizing
+ * data with variable length (e.g., NDEF file content) that exceeds the maximum
+ * allowed length for a single APDU command.
+ *
+ * \param[in,out] self  Command set with communication protocol and response.
+ * \param[in] dgi                Data group identifier (DGI) value
+ * \param[in] dgi_data           Pointer to the data field of the respective
+ * DGI. (Example: AES COTT Key, ECC Key, and NDEF file content)
+ * \return ifx_status_t
+ * \retval IFX_SUCCESS : If API operation is successful
+ * \retval IFX_ILLEGAL_ARGUMENT : If invalid/NULL parameter is passed to
+ * function
+ * \retval IFX_OUT_OF_MEMORY : If any memory allocation fails
+ */
+static ifx_status_t nbt_personalize_data_chained(nbt_cmd_t *self, uint16_t dgi,
+                                                 const ifx_blob_t *dgi_data)
+{
+#if (IFX_VALIDATE_NULL_PTR)
+    if (IFX_VALIDATE_NULL_PTR_MEMORY(self) ||
+        IFX_VALIDATE_NULL_PTR_MEMORY(dgi_data))
+    {
+        return IFX_ERROR(NBT_CMD_PERSO, NBT_PERSONALIZE_DATA,
+                         IFX_ILLEGAL_ARGUMENT);
+    }
+#endif
+
+    ifx_status_t status = IFX_SUCCESS;
+
+    // Offset value as specified in the file data
+    uint16_t file_offset = 0;
+    IFX_READ_U16(dgi_data->buffer, file_offset);
+
+    size_t transmission_offset = 2; // Skip the offset bytes in the data buffer
+    const size_t header_length =
+        IFX_TLV_DGI_LEN_WITH_ID_SIZE + 2; // TLV header + offset bytes
+
+    ifx_blob_t dgi_data_chunk;
+    dgi_data_chunk.buffer = malloc(NBT_MAX_LC);
+    dgi_data_chunk.length = NBT_MAX_LC;
+
+    size_t remaining_length = dgi_data->length - transmission_offset;
+
+    if (IFX_VALIDATE_NULL_PTR_MEMORY(dgi_data_chunk.buffer))
+    {
+        return IFX_ERROR(NBT_CMD_PERSO, NBT_PERSONALIZE_DATA,
+                         IFX_OUT_OF_MEMORY);
+    }
+
+    while (remaining_length > 0)
+    {
+        size_t chunk_size = (remaining_length + header_length > NBT_MAX_LC)
+                                ? (NBT_MAX_LC - header_length)
+                                : remaining_length;
+
+        IFX_UPDATE_U16(dgi_data_chunk.buffer, file_offset);
+        memcpy(&dgi_data_chunk.buffer[2],
+               dgi_data->buffer + transmission_offset, chunk_size);
+        dgi_data_chunk.length =
+            chunk_size + 2; // Include the offset bytes in the length
+        transmission_offset += chunk_size;
+
+        file_offset += chunk_size;
+        remaining_length -= chunk_size;
+
+        status = nbt_personalize_data_transceive(self, dgi, &dgi_data_chunk);
+
+        if (ifx_error_check(status) || !IFX_CHECK_SW_OK(self->response->sw))
+        {
+            ifx_apdu_destroy(self->apdu);
+            break;
+        }
+
+        // Keep response for last chunk
+        if (remaining_length > 0)
+        {
+            ifx_apdu_destroy(self->apdu);
+            ifx_apdu_response_destroy(self->response);
+        }
+    }
+
+    IFX_FREE(dgi_data_chunk.buffer);
+    return status;
+}
 /**
  * \brief Issues finalize personalization command. Personalization is considered
  * completed after successful execution of finalize personalization.
@@ -81,24 +209,25 @@ ifx_status_t nbt_personalize_data(nbt_cmd_t *self, uint16_t dgi,
     }
 #endif
 
-    ifx_status_t status = build_personalize_data(dgi, dgi_data, self->apdu);
-    if (ifx_error_check(status))
+    if (dgi_data == NULL || dgi_data->buffer == NULL || dgi_data->length == 0)
     {
-        NBT_APDU_LOG(self->logger, NBT_CMD_LOG_TAG, IFX_LOG_ERROR,
-                     "build_personalize_data unable to build command");
-    }
-    else
-    {
-        status = ifx_apdu_protocol_transceive(self->protocol, self->apdu,
-                                              self->response);
-        if (ifx_error_check(status))
-        {
-            NBT_APDU_LOG(self->logger, NBT_CMD_LOG_TAG, IFX_LOG_ERROR,
-                         "apdu transceive error");
-        }
+        return IFX_ERROR(NBT_CMD_PERSO, NBT_PERSONALIZE_DATA,
+                         IFX_ILLEGAL_ARGUMENT);
     }
 
-    return status;
+    if (dgi_data->length + IFX_TLV_DGI_LEN_WITH_ID_SIZE > NBT_MAX_LC)
+    {
+        // Variable data length only allowed for specific DGI values
+        if (dgi != NBT_DGI_E104 && (dgi < NBT_DGI_E1A1 || dgi > NBT_DGI_E1A4))
+        {
+            return IFX_ERROR(NBT_CMD_PERSO, NBT_PERSONALIZE_DATA,
+                             IFX_ILLEGAL_ARGUMENT);
+        }
+
+        return nbt_personalize_data_chained(self, dgi, dgi_data);
+    }
+
+    return nbt_personalize_data_transceive(self, dgi, dgi_data);
 }
 
 /**

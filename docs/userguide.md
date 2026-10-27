@@ -56,9 +56,7 @@ The OPTIGA™ Authenticate NBT Host Library for C includes three core libraries 
 * [hsw-ndef](../libs/hsw-ndef/README.md)
 * [hsw-ndef-bp](../libs/hsw-ndef-bp/README.md)
 
-<!-- markdownlint-disable MD033 -->
 <img src="./images/hsw-nbt-architecture.png" alt="Host library architecture" width="300">
-<!-- markdownlint-enable MD033 -->
 
 #### hsw-apdu-nbt
 
@@ -368,9 +366,7 @@ If not using `CMake` to build the code, you will need to define these macros for
 
 An example interaction between the host library's components and an application is illustrated below with a use case: *Update URI data in an application file of the OPTIGA™ Authenticate NBT*. The `hsw-ndef` library is used to prepare a URI record and update it on the file system of the OPTIGA™ Authenticate NBT using the `hsw-apdu-nbt` library.
 
-<!-- markdownlint-disable MD033 -->
 <img src="./images/hsw-nbt-interaction.png" alt="Library interaction overview" width="800">
-<!-- markdownlint-enable MD033 -->
 
 ## Host library usage
 
@@ -386,7 +382,7 @@ The usage of OPTIGA™ Authenticate NBT Host Library for C's APIs to update a UR
     #include "nbt-cmd.h"
     ```
 
-2. Use the GP T=1' protocol channel as an interface to communicate with the OPTIGA™ Authenticate NBT
+1. Use the GP T=1' protocol channel as an interface to communicate with the OPTIGA™ Authenticate NBT
 
     ```c
     /** GP T=1' I2C protocol - PSOC™6 Host MCU */
@@ -405,7 +401,7 @@ The usage of OPTIGA™ Authenticate NBT Host Library for C's APIs to update a UR
     status = ifx_protocol_activate(&gp_i2c_protocol, NULL, NULL);
     ```
 
-3. Update the URI record in the OPTIGA™ Authenticate NBT's NDEF message file (FileID 'E104')
+1. Update the URI record in the OPTIGA™ Authenticate NBT's NDEF message file (FileID 'E104')
 
     ```c
     // NBTCommandSet object to handle all OPTIGA™ Authenticate NBT operations

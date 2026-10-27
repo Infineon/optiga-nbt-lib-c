@@ -4,7 +4,7 @@ SPDX-License-Identifier: CC-BY-4.0
 -->
 
 # Global Platform T=1' Library
->
+
 > C library for Global Platform T=1' communication
 
 This library implements the Global Platform T=1' protocol as a reusable layer for generic `Protocol` stacks.
@@ -220,7 +220,8 @@ ifx_protocol_destroy(&protocol);
 
 ## Components
 
-- **t1-prime**
+### t1-prime
+
 This component includes setting physical layer parameters for Global Platform T=1' protocol and function pointer implementations for hsw_protocol library. This components is responsible for framing and transceiving the APDUs as per GP T=1' protocol. The pre-requisite is that, this protocol library requires concrete implementation of physical layer protocol(I2C /SPI).
 
 ## Directory Structure

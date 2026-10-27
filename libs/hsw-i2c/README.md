@@ -2,6 +2,7 @@
 SPDX-FileCopyrightText: Copyright (c) 2024-2026 Infineon Technologies AG
 SPDX-License-Identifier: CC-BY-4.0
 -->
+
 # C Interface for I2C Drivers
 
 This is a header-only C interface for reusable [I2C](https://en.wikipedia.org/wiki/I%C2%B2C) drivers. No actual implementation is provided rather developers can use the header to have the same code running on different platforms by linking to concrete implementations.

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Infineon Technologies AG
 # SPDX-License-Identifier: MIT
 
-name: Doxygen docu deployment
+name: Doxygen documentation deployment
 
 on:
   push:
@@ -14,10 +14,14 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
 
     - uses: ssciwr/doxygen-install@v1
       with:
@@ -33,7 +37,7 @@ jobs:
 
     - name: Upload static files as artifact
       id: deployment
-      uses: actions/upload-pages-artifact@v3 # or specific "vX.X.X" version tag for this action
+      uses: actions/upload-pages-artifact@v5 # or specific "vX.X.X" version tag for this action
       with:
         path: ${{github.workspace}}/build/docs/html
 
@@ -43,7 +47,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
@@ -54,4 +58,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

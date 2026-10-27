@@ -13,7 +13,7 @@
 #include "ifx-utils-lib.h"
 
 #if !defined(IFX_MEMCPY) || !defined(IFX_MEMCMP) || !defined(IFX_MEMSET) ||    \
-    (!defined(IFX_FREE))
+    !defined(IFX_FREE) || !defined(IFX_MEMMOVE)
 #include <string.h>
 #endif
 
@@ -52,6 +52,14 @@
 #define IFX_FREE(buffer) free(buffer)
 #endif
 
+#ifndef IFX_MEMMOVE
+/**
+ * \brief Allows custom definition of memory move API. By default, memmove()
+ * from string.h is used.
+ */
+#define IFX_MEMMOVE(dest, src, size) memmove(dest, src, size)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -59,39 +67,44 @@ extern "C" {
 /**
  * \brief Macro to suppress unused variable warnings.
  */
-#define IFX_UNUSED_VARIABLE(var)           (void) var
+#define IFX_UNUSED_VARIABLE(var) (void) var
 
 /* Function identifiers */
 
 /**
  * \brief Function identifier of utils concat for ifx_blob_t type data.
  */
-#define IFX_UTILS_CONCAT                   UINT8_C(0x01)
+#define IFX_UTILS_CONCAT         UINT8_C(0x01)
 
 /**
  * \brief Defines 0x01.
  */
-#define IFX_ENABLE                         UINT8_C(0x01)
+#define IFX_ENABLE               UINT8_C(0x01)
 
 /**
  * \brief Defines 0x00.
  */
-#define IFX_DISABLE                        UINT8_C(0x00)
+#define IFX_DISABLE              UINT8_C(0x00)
 
 /**
  * \brief Indicates Endianness of architecture.
  */
-#define IFX_LITTLE_ENDIAN                  IFX_ENABLE
+#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#define IFX_LITTLE_ENDIAN 0
+#else
+#define IFX_LITTLE_ENDIAN 1
+#endif
 
 /**
- * \brief Validation of NULL pointer
+ * \brief Validation of NULL pointer, use plain integer constant because
+ * it is evaluated in if conditions.
  */
-#define IFX_VALIDATE_NULL_PTR              IFX_ENABLE
+#define IFX_VALIDATE_NULL_PTR            1
 
 /**
  * \brief Macro to check if the blob or its buffer is NULL.
  */
-#define IFX_VALIDATE_NULL_PTR_BLOB(blob)   (blob == NULL || blob->buffer == NULL)
+#define IFX_VALIDATE_NULL_PTR_BLOB(blob) (blob == NULL || blob->buffer == NULL)
 
 /**
  * \brief Macro to check if the memory address is pointing to NULL.

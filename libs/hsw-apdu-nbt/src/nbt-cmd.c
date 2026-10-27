@@ -783,7 +783,7 @@ ifx_status_t nbt_update_fap_with_password(
     nbt_cmd_t *self, const nbt_file_access_policy_t *fap_policy,
     const ifx_blob_t *master_password)
 {
-    ifx_blob_t fap_bytes;
+    ifx_blob_t fap_bytes = {0};
     ifx_status_t status;
 
     /* Convert handler's field into bytes array. */
@@ -794,6 +794,8 @@ ifx_status_t nbt_update_fap_with_password(
         status = nbt_update_fap_bytes_with_password(self, &fap_bytes,
                                                     master_password);
     }
+    IFX_FREE(fap_bytes.buffer);
+    fap_bytes.buffer = NULL;
 
     return status;
 }
@@ -1405,25 +1407,17 @@ static ifx_status_t append_apdu_response(ifx_apdu_response_t *self,
     }
 
     // Append response data and overwrite status word of existing response.
-    uint8_t *buffer_temp = (uint8_t *) malloc(self->len);
+    uint8_t *buffer_temp =
+        (uint8_t *) realloc(self->data, self->len + response->len);
     if (buffer_temp == NULL)
     {
         return IFX_ERROR(LIB_APDU, IFX_APDU_RESPONSE_ENCODE, IFX_OUT_OF_MEMORY);
     }
-    IFX_MEMCPY(buffer_temp, self->data, self->len);
-    self->data = (uint8_t *) malloc(self->len + response->len);
-    if (self->data == NULL)
-    {
-        IFX_FREE(buffer_temp);
-        buffer_temp = NULL;
-        return IFX_ERROR(LIB_APDU, IFX_APDU_RESPONSE_ENCODE, IFX_OUT_OF_MEMORY);
-    }
-    IFX_MEMCPY(self->data, buffer_temp, self->len);
+    self->data = buffer_temp;
+
     IFX_MEMCPY(self->data + self->len, response->data, response->len);
     self->len = self->len + response->len;
     self->sw = response->sw;
-    IFX_FREE(buffer_temp);
-    buffer_temp = NULL;
     return IFX_SUCCESS;
 }
 
@@ -1478,7 +1472,7 @@ static ifx_status_t recursive_ndef_read(nbt_cmd_t *self, uint16_t offset,
         }
 
         // Shift all data by 2-byte left in response data.
-        IFX_MEMCPY(response.data, response.data + 2U, data_length);
+        IFX_MEMMOVE(response.data, response.data + 2U, data_length);
 
         // Calculate next iteration expected length and offset.
         offset = offset + (uint16_t) (data_length + 2U);
@@ -1493,8 +1487,15 @@ static ifx_status_t recursive_ndef_read(nbt_cmd_t *self, uint16_t offset,
     }
     if (total_bytes_to_read > offset)
     {
-        recursive_ndef_read(self, offset, total_bytes_to_read);
+        status = recursive_ndef_read(self, offset, total_bytes_to_read);
+        if (ifx_error_check(status) || !IFX_CHECK_SW_OK(self->response->sw))
+        {
+            *(self->response) = response;
+            return status;
+        }
         append_apdu_response(&response, self->response);
+
+        free(self->response->data);
     }
     *(self->response) = response;
 
@@ -1534,36 +1535,6 @@ static ifx_status_t recursive_ndef_update(nbt_cmd_t *self, uint16_t offset,
     }
 #endif
 
-    // Adding file size at the beginning of file data.
-    if (offset == 0)
-    {
-        // fap_content.length, fap_content.buffer
-
-        uint8_t *buffer_data = (uint8_t *) malloc(ndef_bytes->length + 2);
-        if (buffer_data == NULL)
-        {
-            return IFX_ERROR(NBT_CMD, NBT_UPDATE_RECURSIVE_BINARY,
-                             IFX_OUT_OF_MEMORY);
-        }
-        // Adding 2 bytes NLEN in buffer.
-        IFX_UPDATE_U16(buffer_data, (ndef_bytes->length));
-        IFX_MEMCPY(buffer_data + 2U, ndef_bytes->buffer, ndef_bytes->length);
-
-        // Update buffer size including 2 bytes NLEN field
-        ndef_bytes->length = ndef_bytes->length + 2;
-
-        // Copy updated data to ndef_bytes
-        ndef_bytes->buffer = (uint8_t *) malloc(ndef_bytes->length);
-        if (ndef_bytes->buffer == NULL)
-        {
-            return IFX_ERROR(NBT_CMD, NBT_UPDATE_RECURSIVE_BINARY,
-                             IFX_OUT_OF_MEMORY);
-        }
-        IFX_MEMCPY(ndef_bytes->buffer, buffer_data, ndef_bytes->length);
-        IFX_FREE(buffer_data);
-        buffer_data = NULL;
-    }
-
     // Extracting block of NDEF message to be updated.
     uint32_t total_remaining_data_size = ndef_bytes->length - offset;
     uint32_t block_size = (total_remaining_data_size > NBT_MAX_LC)
@@ -1573,7 +1544,11 @@ static ifx_status_t recursive_ndef_update(nbt_cmd_t *self, uint16_t offset,
     // Update the sub set of data.
     status = nbt_update_binary(self, offset, block_size,
                                ndef_bytes->buffer + offset);
-    if (ifx_error_check(status) || !(IFX_CHECK_SW_OK(self->response->sw)))
+    uint16_t sw = self->response->sw;
+    ifx_apdu_destroy(self->apdu);
+    ifx_apdu_response_destroy(self->response);
+
+    if (ifx_error_check(status) || !(IFX_CHECK_SW_OK(sw)))
     {
         return status;
     }
@@ -1612,6 +1587,15 @@ ifx_status_t nbt_ndef_update_with_id_password(nbt_cmd_t *self, uint16_t file_id,
 {
     ifx_status_t status;
 
+#if (IFX_VALIDATE_NULL_PTR)
+    if (IFX_VALIDATE_NULL_PTR_MEMORY(self) ||
+        IFX_VALIDATE_NULL_PTR_BLOB(ndef_bytes))
+    {
+        return IFX_ERROR(NBT_CMD, NBT_UPDATE_RECURSIVE_BINARY,
+                         IFX_ILLEGAL_ARGUMENT);
+    }
+#endif
+
     /* Check read password, if read password is NULL then select file with id
     without read password, otherwise select file with read password. */
     if (write_password != NULL)
@@ -1627,8 +1611,30 @@ ifx_status_t nbt_ndef_update_with_id_password(nbt_cmd_t *self, uint16_t file_id,
     }
     if (!ifx_error_check(status) && IFX_CHECK_SW_OK(self->response->sw))
     {
+        /* Release the select command's APDU and response buffers before the
+         * update sequence overwrites them. */
+        ifx_apdu_destroy(self->apdu);
+        ifx_apdu_response_destroy(self->response);
+
+        /* Prepend the 2-byte NLEN field in a locally owned buffer so the
+         * caller's input blob is left unchanged. */
+        ifx_blob_t ndef_message = {0};
+        ndef_message.length = ndef_bytes->length + 2U;
+        ndef_message.buffer = (uint8_t *) malloc(ndef_message.length);
+        if (ndef_message.buffer == NULL)
+        {
+            return IFX_ERROR(NBT_CMD, NBT_UPDATE_RECURSIVE_BINARY,
+                             IFX_OUT_OF_MEMORY);
+        }
+        IFX_UPDATE_U16(ndef_message.buffer, ndef_bytes->length);
+        IFX_MEMCPY(ndef_message.buffer + 2U, ndef_bytes->buffer,
+                   ndef_bytes->length);
+
         status = recursive_ndef_update(self, NBT_RECURSIVE_UPDATE_INIT_OFFSET,
-                                       ndef_bytes);
+                                       &ndef_message);
+
+        IFX_FREE(ndef_message.buffer);
+        ndef_message.buffer = NULL;
     }
     return status;
 }
@@ -1725,6 +1731,13 @@ ifx_status_t nbt_ndef_read_with_id_password(nbt_cmd_t *self, uint16_t file_id,
 {
     ifx_status_t status;
 
+#if (IFX_VALIDATE_NULL_PTR)
+    if (IFX_VALIDATE_NULL_PTR_MEMORY(self))
+    {
+        return IFX_ERROR(NBT_CMD, NBT_SELECT_FILE_BY_ID, IFX_ILLEGAL_ARGUMENT);
+    }
+#endif
+
     /* check read password, if read password is NULL then select file with id
     without read password, otherwise select file with read password */
     if (read_password != NULL)
@@ -1739,7 +1752,11 @@ ifx_status_t nbt_ndef_read_with_id_password(nbt_cmd_t *self, uint16_t file_id,
         status = nbt_select_file(self, file_id);
     }
 
-    if (!ifx_error_check(status) && IFX_CHECK_SW_OK(self->response->sw))
+    uint16_t sw = self->response->sw;
+    ifx_apdu_destroy(self->apdu);
+    ifx_apdu_response_destroy(self->response);
+
+    if (!ifx_error_check(status) && IFX_CHECK_SW_OK(sw))
     {
         status = recursive_ndef_read(self, NBT_RECURSIVE_READ_INIT_OFFSET,
                                      NBT_MAX_LE);

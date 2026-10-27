@@ -250,6 +250,75 @@ ifx_status_t ifx_logger_log_bytes(const ifx_logger_t *self, const char *source,
 }
 
 /**
+ * \brief Logs \p data as a hex dump, splitting it into fixed-width lines of
+ * \p cols bytes each.
+ *
+ * \details Bytes within a line are separated by a single space. Logging stops
+ * at the first line that fails to be logged.
+ *
+ * \code
+ *     uint8_t data[] = {0x01u, 0x02u, 0x03u, 0x04u, 0x05u};
+ *     ifx_logger_hex_fixed_length(&logger, TAG, IFX_LOG_INFO, data,
+ * sizeof(data), 2u);
+ *     // 01 02
+ *     // 03 04
+ *     // 05
+ * \endcode
+ *
+ * \param[in] self Logger object holding concrete implementation. Use
+ * \ref ifx_logger_default to use default logger set via
+ * ifx_logger_set_default().
+ * \param[in] source String with information where the log originated from.
+ * \param[in] level ifx_log_level of the message (used for filtering).
+ * \param[in] data Data to be logged.
+ * \param[in] data_len Number of bytes in \p data.
+ * \param[in] cols Number of bytes logged per line (must not be \c 0).
+ * \return ifx_status_t \c IFX_SUCCESS if successful, any other value in
+ * case of error.
+ * \relates ifx_logger_t
+ */
+ifx_status_t ifx_logger_hex_fixed_length(const ifx_logger_t *self,
+                                         const char *source,
+                                         ifx_log_level level,
+                                         const uint8_t *data, size_t data_len,
+                                         size_t cols)
+{
+// Logging disabled at compile time
+#ifndef IFX_DISABLE_LOGGING
+    // Validate parameters
+    if ((self == NULL) || (self->_log == NULL) || (cols == 0U) ||
+        ((data == NULL) && (data_len != 0U)))
+    {
+        return IFX_ERROR(LIB_LOGGER, IFX_LOGGER_LOG, IFX_ILLEGAL_ARGUMENT);
+    }
+
+    // Pre-check level
+    if (level < self->_level)
+    {
+        return IFX_SUCCESS;
+    }
+
+    for (size_t offset = 0U; offset < data_len; offset += cols)
+    {
+        size_t chunk = data_len - offset;
+        if (chunk > cols)
+        {
+            chunk = cols;
+        }
+        ifx_status_t status = ifx_logger_log_bytes(self, source, level, NULL,
+                                                   data + offset, chunk, " ");
+        if (ifx_error_check(status))
+        {
+            return status;
+        }
+    }
+    return IFX_SUCCESS;
+#else // IFX_DISABLE_LOGGING
+    return IFX_SUCCESS;
+#endif
+}
+
+/**
  * \brief Sets minimum log level of interest.
  *
  * \details All messages with level lower than \p level shall be discarded by

@@ -1159,7 +1159,6 @@ ifx_status_t ifx_t1prime_block_transmit(ifx_protocol_t *self,
 
     // Actually transmit block
 #ifdef IFX_T1PRIME_INTERFACE_I2C
-    // TODO: Check what is the correct timeout to be used
     ifx_timer_t bwt_timer;
     status = ifx_timer_set(&bwt_timer, (uint64_t) protocol_state->bwt * 1000U);
     if (status != IFX_SUCCESS)

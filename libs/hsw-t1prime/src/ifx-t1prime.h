@@ -78,7 +78,7 @@ extern "C" {
  * \param[in] pcb PCB to be checked.
  * \return bool \c true if PCB indicates an I block.
  */
-#define IFX_T1PRIME_PCB_IS_I(pcb)     ((IFX_T1PRIME_PCB((pcb)) & 0x80u) == 0x00u)
+#define IFX_T1PRIME_PCB_IS_I(pcb) ((IFX_T1PRIME_PCB((pcb)) & 0x80u) == 0x00u)
 
 /**
  * \brief Gets sequence counter for Global Platform T=1' Protocol Control Byte
@@ -116,7 +116,7 @@ extern "C" {
  * \param[in] pcb PCB to be checked.
  * \return bool \c true if PCB indicates a R block.
  */
-#define IFX_T1PRIME_PCB_IS_R(pcb)     ((IFX_T1PRIME_PCB((pcb)) & 0xc0u) == 0x80u)
+#define IFX_T1PRIME_PCB_IS_R(pcb) ((IFX_T1PRIME_PCB((pcb)) & 0xc0u) == 0x80u)
 
 /**
  * \brief Gets sequence counter for Global Platform T=1' Protocol Control Byte

@@ -60,7 +60,7 @@ typedef struct
 
     ifx_record_handle_t *
         *local_record_list; /**< Pointer to local records list which contains
-                               array of local record handles*/
+                                array of local record handles*/
 
     uint32_t count_of_local_records; /**< Count of local records*/
 

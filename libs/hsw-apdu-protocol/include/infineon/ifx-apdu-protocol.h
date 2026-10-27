@@ -20,8 +20,8 @@
  * @param[in] source_information Source information from where logs are
  * originated.
  * @param[in] logger_level Log level
- * @param[in] formatter String with formatter for data passed as variable
- * argument
+ * @param[in] ... Format string followed by the data passed as variable
+ * arguments.
  *
  * It maps to the ifx_logger_log function if IFX_APDU_PROTOCOL_LOG_ENABLE macro
  * is defined other wise it defines IFX_SUCCESS.
@@ -48,9 +48,8 @@
 
 #ifdef IFX_APDU_PROTOCOL_LOG_ENABLE
 #define IFX_APDU_PROTOCOL_LOG(logger_object, source_information, logger_level, \
-                              formatter, ...)                                  \
-    ifx_logger_log(logger_object, source_information, logger_level, formatter, \
-                   ##__VA_ARGS__)
+                              ...)                                             \
+    ifx_logger_log(logger_object, source_information, logger_level, __VA_ARGS__)
 #define IFX_APDU_PROTOCOL_LOG_BYTES(logger_object, source_information,         \
                                     logger_level, delimeter_1, data, data_len, \
                                     delimeter_2)                               \
@@ -58,7 +57,7 @@
                          delimeter_1, data, data_len, delimeter_2)
 #else
 #define IFX_APDU_PROTOCOL_LOG(logger_object, source_information, logger_level, \
-                              formatter, ...)
+                              ...)
 
 #define IFX_APDU_PROTOCOL_LOG_BYTES(logger_object, source_information,         \
                                     logger_level, delimeter_1, data, data_len, \

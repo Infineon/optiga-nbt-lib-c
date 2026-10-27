@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2025 Infineon Technologies AG
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Infineon Technologies AG
 # SPDX-License-Identifier: MIT
 
 name: Create release
@@ -10,10 +10,12 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set RELEASE_VERSION
         shell: bash
         run: |
@@ -33,7 +35,7 @@ jobs:
             in_section { print }
           ' CHANGELOG.md | tee _changelog_section.md
       - name: Create release in release tabs on GitHub
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body_path: _changelog_section.md
           files: |

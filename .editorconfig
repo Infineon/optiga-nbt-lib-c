@@ -1,33 +1,56 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023-2026 Infineon Technologies AG
 # SPDX-License-Identifier: CC0-1.0
 
+# Common .editorconfig of the host software projects, see guideline RDM-14.
+#
+# A project copies this file as .editorconfig and adds its own sections below the
+# last line of the common part. The part above that line is the same in every
+# project, check-readme-guidelines.py warns when it differs. Do not add a section
+# above the line, add a section for the project's own file types below it.
+
 root = true
 
 [*]
+charset = utf-8
 end_of_line = lf
 indent_style = space
-charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
 
-[*.vsdx]
+[*.{md,json,yml,yaml}]
+indent_size = 2
+
+# reStructuredText: the indentation is syntax, an indent_size makes editors and
+# formatters break lists, tables and code blocks
+[*.rst]
+indent_size = unset
+tab_width = 3
+
+# git writes .gitmodules with tabs, the projects keep it with four spaces
+[.gitmodules]
+indent_style = space
+indent_size = 4
+
+# files that must keep their bytes. A pattern with a "/" is relative to the folder of this
+# file, so the folder and the file types are separate sections: "*.vsdx" only matches
+# in every folder when the pattern has no "/".
+[*.{vsdx,pem,crt}]
+charset = unset
 end_of_line = unset
 indent_style = unset
+indent_size = unset
+trim_trailing_whitespace = unset
+insert_final_newline = unset
+
+[LICENSES/**]
 charset = unset
+end_of_line = unset
+indent_style = unset
+indent_size = unset
+trim_trailing_whitespace = unset
+insert_final_newline = unset
 
-# handled with clang format
-# [*.{c,cpp,cxx,h,hpp,hxx}]
-
-# handled with CMake format
-# [{CMakeLists.txt,*.cmake,*.cmake.in}]
-
-[*.md]
-indent_size = 2
-trim_trailing_whitespace = true
-insert_final_newline = true
-
-[*.{yml,yaml}]
-indent_size = 2
-insert_final_newline = true
-trim_trailing_whitespace = true
+# project specific sections below
 
 [{Doxyfile.in}]
 indent_size = 2

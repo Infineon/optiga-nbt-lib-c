@@ -34,7 +34,7 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
     // Add the headers of logger implementation libraries (Example: File logger)
     ```
 
-2. Initialize the command set
+1. Initialize the command set
 
     a. Initialize the logger handle
 
@@ -52,9 +52,7 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
     ifx_logger_set_level(&logger_handle, IFX_LOG_INFO);
     ```
 
-    b. Initialize the protocol
-
-    * GP T=1' I2C protocol
+    b. Initialize the GP T=1' I2C protocol
 
     ```c
     // Protocol to handle the GP T=1' I2C protocol communication with tag
@@ -85,7 +83,7 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
 
     c. Initialize the OPTIGA&trade; Authenticate NBT command set with the required protocol handle and logger handle
 
-    * For GP T=1' I2C protocol
+    For GP T=1' I2C protocol:
 
     ```c
     // NBT command set object to handle all OPTIGA&trade; Authenticate NBT operations.
@@ -94,7 +92,7 @@ The OPTIGA&trade; Authenticate NBT APDU library allows the host application to s
     status = nbt_initialize(&command_set, &t1prime_protocol, &logger_handle);
     ```
 
-3. Communicate with the OPTIGA&trade; Authenticate NBT controller
+1. Communicate with the OPTIGA&trade; Authenticate NBT controller
 
     An example to update and read the NDEF message is illustrated below:
 
@@ -147,10 +145,15 @@ This image shows the software architecture of the library.
 ## Components
 
 * **Command set**
+
 This component acts as the API interface for the host application. This module is responsible for coordinating the building of APDU commands, sending the commands to the secure element through the communication interface, and receiving response from the secure element.
+
 * **Command builder**
+
 This component helps in framing the command APDUs according to the OPTIGA&trade; Authenticate NBT applet specification.
+
 * **Response parser**
+
 This component helps in decoding the response APDUs including response data and status word according to the OPTIGA&trade; Authenticate NBT applet specification.
 
 ## Interaction

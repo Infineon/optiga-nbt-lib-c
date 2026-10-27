@@ -156,6 +156,27 @@ ifx_status_t ifx_logger_log_bytes(const ifx_logger_t *self, const char *source,
                                   const char *delimiter);
 
 /**
+ * \brief Logs \p data as a hex dump, splitting it into fixed-width lines.
+ *
+ * \param[in] self Logger object holding concrete implementation. Use
+ * \ref ifx_logger_default to use default logger set via
+ * ifx_logger_set_default().
+ * \param[in] source String with information where the log originated from.
+ * \param[in] level ifx_log_level of the message (used for filtering).
+ * \param[in] data Data to be logged.
+ * \param[in] data_len Number of bytes in \p data.
+ * \param[in] cols Number of bytes logged per line (must not be \c 0).
+ * \return ifx_status_t \c IFX_SUCCESS if successful, any other value in
+ * case of error.
+ * \relates ifx_logger
+ */
+ifx_status_t ifx_logger_hex_fixed_length(const ifx_logger_t *self,
+                                         const char *source,
+                                         ifx_log_level level,
+                                         const uint8_t *data, size_t data_len,
+                                         size_t cols);
+
+/**
  * \brief Implementation specific log function.
  *
  * \details Used by ifx_logger_log() to call concrete implementation.

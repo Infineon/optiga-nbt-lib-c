@@ -13,7 +13,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 # Main project configuration
 project(
   hsw-nbt
-  VERSION 1.2.0
+  VERSION 1.2.1
   DESCRIPTION "OPTIGA Authenticate NBT Host Library for C"
   LANGUAGES C CXX)
 

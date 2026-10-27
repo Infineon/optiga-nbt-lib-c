@@ -22,8 +22,8 @@
  * @param[in] source_information Source information from where logs are
  * originated.
  * @param[in] logger_level Log level
- * @param[in] formatter String with formatter for data passed as variable
- * argument
+ * @param[in] ... Format string followed by the data passed as variable
+ * arguments.
  *
  * It maps to the ifx_logger_log function if NBT_APDU_LOG_ENABLE macro is
  * defined other wise it defines IFX_SUCCESS.
@@ -49,17 +49,14 @@
  */
 
 #ifdef NBT_APDU_LOG_ENABLE
-#define NBT_APDU_LOG(logger_object, source_information, logger_level,          \
-                     formatter, ...)                                           \
-    ifx_logger_log(logger_object, source_information, logger_level, formatter, \
-                   ##__VA_ARGS__)
+#define NBT_APDU_LOG(logger_object, source_information, logger_level, ...)     \
+    ifx_logger_log(logger_object, source_information, logger_level, __VA_ARGS__)
 #define NBT_APDU_LOG_BYTES(logger_object, source_information, logger_level,    \
                            delimeter_1, data, data_len, delimeter_2)           \
     ifx_logger_log_bytes(logger_object, source_information, logger_level,      \
                          delimeter_1, data, data_len, delimeter_2)
 #else
-#define NBT_APDU_LOG(logger_object, source_information, logger_level,          \
-                     formatter, ...)
+#define NBT_APDU_LOG(logger_object, source_information, logger_level, ...)
 
 #define NBT_APDU_LOG_BYTES(logger_object, source_information, logger_level,    \
                            delimeter_1, data, data_len, delimeter_2)

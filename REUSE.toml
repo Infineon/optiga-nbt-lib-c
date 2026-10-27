@@ -17,6 +17,12 @@ SPDX-FileCopyrightText = "Copyright (c) 2024-2026 Infineon Technologies AG"
 SPDX-License-Identifier = "CC-BY-4.0"
 
 [[annotations]]
+path = ["docs/images/**.png", "docs/userguide/source/images/**.png", "docs/userguide/source/images/**.jpg"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) 2024-2026 Infineon Technologies AG"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
 path = "docs/images/**.png"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Copyright (c) 2024-2026 Infineon Technologies AG"

@@ -49,11 +49,11 @@ extern "C" {
 typedef struct
 {
     uint8_t error_reason; /**< Error reason that caused handover selector to
-                             return the error record */
+                            return the error record */
 
     ifx_blob_t
         *error; /**< Error data that provides information on the condition
-               handover selector entered into erroneous state */
+                handover selector entered into erroneous state */
 } ifx_record_error_t;
 
 /* public functions */

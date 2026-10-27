@@ -11,12 +11,16 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
 
-    - uses: ssciwr/doxygen-install@v1
+    - uses: ssciwr/doxygen-install@v2.0.1
       with:
         version: "1.10.0"
 

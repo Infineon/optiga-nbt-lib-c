@@ -46,6 +46,7 @@ ifx_status_t nbt_initialize(nbt_cmd_t *self, ifx_protocol_t *protocol,
     {
         return IFX_ERROR(NBT_APDU, NBT_INIT, IFX_OUT_OF_MEMORY);
     }
+    memset(self->apdu, 0, sizeof(ifx_apdu_t));
 
     self->response =
         (ifx_apdu_response_t *) malloc(sizeof(ifx_apdu_response_t));
@@ -55,6 +56,7 @@ ifx_status_t nbt_initialize(nbt_cmd_t *self, ifx_protocol_t *protocol,
         self->apdu = NULL;
         return IFX_ERROR(NBT_APDU, NBT_INIT, IFX_OUT_OF_MEMORY);
     }
+    memset(self->response, 0, sizeof(ifx_apdu_response_t));
 
     self->apdu_error_map_list = nbt_apdu_errors;
     self->apdu_error_map_list_length = NBT_MESSAGE_ERROR_COUNTS;
@@ -70,22 +72,33 @@ ifx_status_t nbt_initialize(nbt_cmd_t *self, ifx_protocol_t *protocol,
  */
 void nbt_destroy(nbt_cmd_t *self)
 {
-    if (!IFX_VALIDATE_NULL_PTR_MEMORY(self))
+    if (IFX_VALIDATE_NULL_PTR_MEMORY(self))
+    {
+        return;
+    }
+
+    if (!IFX_VALIDATE_NULL_PTR_MEMORY(self->apdu))
     {
         IFX_FREE(self->apdu->data);
-        self->apdu->data = NULL;
-        IFX_FREE(self->apdu);
-        IFX_FREE(self->response->data);
-        self->response->data = NULL;
-        IFX_FREE(self->response);
-        IFX_FREE(self->protocol->_properties);
-        self->protocol->_properties = NULL;
-        self->protocol = NULL;
-        self->logger = NULL;
-        self->apdu = NULL;
-        self->response = NULL;
-        self->apdu_error_map_list = NULL;
     }
+    IFX_FREE(self->apdu);
+    self->apdu = NULL;
+
+    if (!IFX_VALIDATE_NULL_PTR_MEMORY(self->response))
+    {
+        IFX_FREE(self->response->data);
+    }
+    IFX_FREE(self->response);
+    self->response = NULL;
+
+    if (!IFX_VALIDATE_NULL_PTR_MEMORY(self->protocol))
+    {
+        ifx_protocol_destroy(self->protocol);
+        self->protocol = NULL;
+    }
+
+    self->logger = NULL;
+    self->apdu_error_map_list = NULL;
 }
 
 /**

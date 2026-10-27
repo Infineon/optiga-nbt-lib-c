@@ -437,13 +437,14 @@ ifx_status_t ifx_record_hs_get_local_records(
                 while ((index < *count_of_local_records) &&
                        (IFX_SUCCESS == status))
                 {
-                    if (!IFX_MEMCMP(((ifx_record_hs_t *) handle->record_data)
-                                        ->local_record_list[index]
-                                        ->type.buffer,
-                                    alt_carr_type,
-                                    ((ifx_record_hs_t *) handle->record_data)
-                                        ->local_record_list[index]
-                                        ->type.length))
+                    if ((sizeof(alt_carr_type) ==
+                         ((ifx_record_hs_t *) handle->record_data)
+                             ->local_record_list[index]
+                             ->type.length) &&
+                        (!IFX_MEMCMP(((ifx_record_hs_t *) handle->record_data)
+                                         ->local_record_list[index]
+                                         ->type.buffer,
+                                     alt_carr_type, sizeof(alt_carr_type))))
                     {
                         local_record_list->alt_carrier_rec_list[count] =
                             (ifx_record_handle_t *) malloc(
@@ -469,14 +470,15 @@ ifx_status_t ifx_record_hs_get_local_records(
                                                IFX_OUT_OF_MEMORY);
                         }
                     }
-                    else if (!IFX_MEMCMP(
+                    else if ((sizeof(error_type) ==
+                              ((ifx_record_hs_t *) handle->record_data)
+                                  ->local_record_list[index]
+                                  ->type.length) &&
+                             (!IFX_MEMCMP(
                                  ((ifx_record_hs_t *) handle->record_data)
                                      ->local_record_list[index]
                                      ->type.buffer,
-                                 error_type,
-                                 ((ifx_record_hs_t *) handle->record_data)
-                                     ->local_record_list[index]
-                                     ->type.length))
+                                 error_type, sizeof(error_type))))
                     {
                         local_record_list->error_record =
                             (ifx_record_handle_t *) malloc(sizeof(

@@ -92,9 +92,9 @@ static ifx_status_t get_identifier_code(const ifx_blob_t *identifier_bytes,
     {
         /* Compare the identifier and the identifier_bytes->length with existing
          * identifier length. */
-        if (!IFX_MEMCMP(id_list[index].identifier, identifier_bytes->buffer,
-                        identifier_bytes->length) &&
-            (id_list[index].identifier_length == identifier_bytes->length))
+        if ((id_list[index].identifier_length == identifier_bytes->length) &&
+            !IFX_MEMCMP(id_list[index].identifier, identifier_bytes->buffer,
+                        identifier_bytes->length))
         {
             is_valid_identifier = true;
             *identifier_code = id_list[index].identifier_code;

@@ -169,11 +169,10 @@ static ifx_status_t decode_record_to_handle(ifx_ndef_record_t *record,
                                                  record->type_length, handle);
         if (IFX_SUCCESS == status)
         {
-            IFX_FREE(handle->id.buffer); // Deallocating as allocation is done
-                                         // below with required ID value
-            handle->id.buffer = NULL;
+            uint8_t *old_buffer = handle->id.buffer;
             if (IFX_NDEF_ID_LEN_FIELD_NONE == record->id_length)
             {
+                handle->id.buffer = NULL;
                 IFX_MEMSET(&handle->id, 0, sizeof(handle->id));
             }
             else
@@ -183,6 +182,7 @@ static ifx_status_t decode_record_to_handle(ifx_ndef_record_t *record,
 
                 if (NULL == handle->id.buffer)
                 {
+                    handle->id.buffer = old_buffer; // Restore on failure
                     status =
                         IFX_ERROR(IFX_RECORD_HANDLER, IFX_RECORD_HANDLER_DECODE,
                                   IFX_OUT_OF_MEMORY);
@@ -193,18 +193,21 @@ static ifx_status_t decode_record_to_handle(ifx_ndef_record_t *record,
                                handle->id.length);
                 }
             }
+            if (IFX_SUCCESS == status)
+            {
+                IFX_FREE(old_buffer);
+            }
         }
 
         if (IFX_SUCCESS == status)
         {
-            IFX_FREE(handle->type.buffer); // Deallocating as allocation is done
-                                           // below with required Type value
-            handle->type.buffer = NULL;
+            uint8_t *old_buffer = handle->type.buffer;
             handle->type.length = record->type_length;
             handle->type.buffer = (uint8_t *) malloc(handle->type.length);
 
             if (NULL == handle->type.buffer)
             {
+                handle->type.buffer = old_buffer; // Restore on failure
                 status =
                     IFX_ERROR(IFX_RECORD_HANDLER, IFX_RECORD_HANDLER_DECODE,
                               IFX_OUT_OF_MEMORY);
@@ -213,6 +216,7 @@ static ifx_status_t decode_record_to_handle(ifx_ndef_record_t *record,
             {
                 IFX_MEMCPY(handle->type.buffer, record->type,
                            handle->type.length);
+                IFX_FREE(old_buffer);
             }
         }
 

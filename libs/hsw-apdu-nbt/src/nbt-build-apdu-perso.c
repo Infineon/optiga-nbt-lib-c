@@ -33,7 +33,7 @@ ifx_status_t build_personalize_data(uint16_t dgi, const ifx_blob_t *dgi_data,
 {
 #if (IFX_VALIDATE_NULL_PTR)
     if (IFX_VALIDATE_NULL_PTR_MEMORY(apdu) ||
-        (IFX_VALIDATE_NULL_PTR_BLOB(dgi_data)))
+        (IFX_VALIDATE_NULL_PTR_BLOB(dgi_data)) || (dgi_data->length == 0))
     {
         return IFX_ERROR(NBT_BUILD_APDU_PERSO, NBT_BUILD_PERSONALIZE_DATA,
                          IFX_ILLEGAL_ARGUMENT);
@@ -45,17 +45,10 @@ ifx_status_t build_personalize_data(uint16_t dgi, const ifx_blob_t *dgi_data,
     ifx_tlv_t tlv_data;
     uint8_t number_of_tlv = UINT8_C(0x01);
 
-    /* Copy the dgi value, dgi data and data length into TLV type handler */
     tlv_data.tag = dgi;
     tlv_data.length = dgi_data->length;
-    tlv_data.value = (uint8_t *) malloc(dgi_data->length);
-    if (IFX_VALIDATE_NULL_PTR_MEMORY(tlv_data.value))
-    {
-        return IFX_ERROR(NBT_BUILD_APDU_PERSO, NBT_BUILD_PERSONALIZE_DATA,
-                         IFX_OUT_OF_MEMORY);
-    }
-
-    IFX_MEMCPY(tlv_data.value, dgi_data->buffer, dgi_data->length);
+    /* Reference the DGI data directly; the encoder only reads the value. */
+    tlv_data.value = dgi_data->buffer;
 
     apdu->cla = NBT_CLA;
     apdu->ins = NBT_INS_PERSO_DATA;
@@ -68,31 +61,13 @@ ifx_status_t build_personalize_data(uint16_t dgi, const ifx_blob_t *dgi_data,
                                 &encoded_personalize_command);
     if (ifx_error_check(status))
     {
-        IFX_FREE(tlv_data.value);
-        tlv_data.value = NULL;
         return status;
     }
 
-    /* Copy encoded personalize command data ( <dgi> <length> <value> ) into
-     * APDU data fields. */
-    apdu->data = (uint8_t *) malloc(encoded_personalize_command.length);
-    if (IFX_VALIDATE_NULL_PTR_MEMORY(apdu->data))
-    {
-        IFX_FREE(tlv_data.value);
-        IFX_FREE(encoded_personalize_command.buffer);
-        tlv_data.value = NULL;
-        encoded_personalize_command.buffer = NULL;
-        return IFX_ERROR(NBT_BUILD_APDU_PERSO, NBT_BUILD_PERSONALIZE_DATA,
-                         IFX_OUT_OF_MEMORY);
-    }
-
-    IFX_MEMCPY(apdu->data, encoded_personalize_command.buffer,
-               encoded_personalize_command.length);
+    /* Transfer ownership of the encoded buffer to the APDU. */
+    apdu->data = encoded_personalize_command.buffer;
     apdu->lc = encoded_personalize_command.length;
-    IFX_FREE(encoded_personalize_command.buffer);
-    IFX_FREE(tlv_data.value);
-    tlv_data.value = NULL;
-    encoded_personalize_command.buffer = NULL;
+
     return IFX_SUCCESS;
 }
 
